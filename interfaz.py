@@ -75,7 +75,7 @@ def iniciar_app():
         placa = entradas["placa"].get().strip()
 
         if placa == "":
-            messagebox.showerror("Error", "Ingresa una placa para buscar.")
+            messagebox.showerror("Error", "Dato incorrecto.")
             return
 
         vehiculo = vehiculos.buscar_por_placa(placa)
