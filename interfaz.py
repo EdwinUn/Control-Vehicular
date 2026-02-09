@@ -26,21 +26,24 @@ def iniciar_app():
         entry.grid(row=i, column=1, padx=10, pady=5)
         entradas[texto.lower()] = entry
 
-    tk.Label(ventana, text="Fecha multa").grid(row=14, column=0)
+    tk.Label(ventana, text="--- Registro de Multa ---").grid(row=14, column=0, columnspan=2, pady=10)
+
+    tk.Label(ventana, text="Fecha").grid(row=15, column=0)
     entry_fecha = tk.Entry(ventana)
-    entry_fecha.grid(row=14, column=1)
+    entry_fecha.grid(row=15, column=1)
 
-    tk.Label(ventana, text="# Multas persona").grid(row=15, column=0)
+    tk.Label(ventana, text="# Multas persona").grid(row=16, column=0)
     entry_num_multas = tk.Entry(ventana)
-    entry_num_multas.grid(row=15, column=1)
+    entry_num_multas.grid(row=16, column=1)
 
-    tk.Label(ventana, text="¿Corralón? (Sí/No)").grid(row=16, column=0)
+    tk.Label(ventana, text="¿Corralón? (Sí/No)").grid(row=17, column=0)
     entry_corralon = tk.Entry(ventana)
-    entry_corralon.grid(row=16, column=1)
+    entry_corralon.grid(row=17, column=1)
 
-    tk.Label(ventana, text="Lugar multa").grid(row=17, column=0)
+    tk.Label(ventana, text="Lugar de la multa").grid(row=18, column=0)
     entry_lugar = tk.Entry(ventana)
-    entry_lugar.grid(row=17, column=1)
+    entry_lugar.grid(row=18, column=1)
+
 
     # =========================
     # 🚗 FUNCIÓN REGISTRAR
@@ -98,6 +101,13 @@ def iniciar_app():
             resultado_texto.insert(tk.END, info)
         else:
             messagebox.showerror("Error", "Vehículo no encontrado.")
+        
+        info += "\nMultas:\n"
+        if vehiculo["multas"]:
+            for m in vehiculo["multas"]:
+                info += f"- {m['fecha']} | {m['lugar']} | Corralón: {m['corralon']} | Multas persona: {m['numero_multas']}\n"
+        else:
+            info += "Sin multas\n"
             
     def editar():
         placa = entradas["placa"].get().strip()
@@ -166,6 +176,34 @@ def iniciar_app():
                 f"{v['placa']} | {v['marca']} {v['modelo']} | {v['estado']}\n"
             )
   
+  
+    def registrar_multa():
+        placa = entradas["placa"].get().strip()
+
+        if placa == "":
+            messagebox.showerror("Error", "Ingresa la placa del vehículo.")
+            return
+
+        fecha = entry_fecha.get().strip()
+        num = entry_num_multas.get().strip()
+        corralon = entry_corralon.get().strip()
+        lugar = entry_lugar.get().strip()
+
+        if "" in [fecha, num, corralon, lugar]:
+            messagebox.showerror("Error", "Completa todos los datos de la multa.")
+            return
+
+        exito, mensaje = vehiculos.agregar_multa(placa, fecha, num, corralon, lugar)
+
+        if exito:
+            messagebox.showinfo("Éxito", mensaje)
+            entry_fecha.delete(0, tk.END)
+            entry_num_multas.delete(0, tk.END)
+            entry_corralon.delete(0, tk.END)
+            entry_lugar.delete(0, tk.END)
+        else:
+            messagebox.showerror("Error", mensaje)
+
     # =========================
     # 🔘 BOTÓN
     # =========================
@@ -195,5 +233,9 @@ def iniciar_app():
     boton_listar = tk.Button(
     ventana, text="Listar Vehículos", command=listar, width=20, bg="#607D8B", fg="white")
     boton_listar.grid(row=13, column=0, columnspan=2, pady=5)
+
+    boton_multa = tk.Button(
+    ventana, text="Registrar Multa", command=registrar_multa, width=20, bg="red", fg="white")
+    boton_multa.grid(row=19, column=0, columnspan=2, pady=10)
 
     ventana.mainloop()

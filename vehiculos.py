@@ -12,8 +12,18 @@ ARCHIVO_DATOS = "datos.json"
 def cargar_datos():
     if not os.path.exists(ARCHIVO_DATOS):
         return []
-    with open(ARCHIVO_DATOS, "r", encoding="utf-8") as archivo:
-        return json.load(archivo)
+    try:
+        with open(ARCHIVO_DATOS, "r", encoding="utf-8") as archivo:
+            vehiculos = json.load(archivo)
+
+            # Asegurar que todos tengan el campo multas
+            for v in vehiculos:
+                if "multas" not in v:
+                    v["multas"] = []
+
+            return vehiculos
+    except:
+        return []
 
 
 def guardar_datos(lista_vehiculos):
@@ -136,3 +146,12 @@ def agregar_multa(placa, fecha, numero_multas, corralon, lugar):
             return True, "Multa agregada."
 
     return False, "Vehículo no encontrado."
+
+def contar_multas(placa):
+    vehiculos = cargar_datos()
+
+    for v in vehiculos:
+        if v["placa"] == placa:
+            return len(v["multas"])
+
+    return 0
