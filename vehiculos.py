@@ -38,6 +38,7 @@ def registrar_vehiculo(datos):
 
     datos["estado"] = "Activo"
     datos["historial"] = []
+    datos["multas"] = []
 
     vehiculos.append(datos)
     guardar_datos(vehiculos)
@@ -114,3 +115,24 @@ def listar_vehiculos(filtro=None):
 def agregar_historial(vehiculo, evento):
     fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
     vehiculo["historial"].append(f"{fecha} - {evento}")
+
+#Multas
+
+def agregar_multa(placa, fecha, numero_multas, corralon, lugar):
+    vehiculos = cargar_datos()
+
+    for v in vehiculos:
+        if v["placa"] == placa:
+            multa = {
+                "fecha": fecha,
+                "numero_multas": numero_multas,
+                "corralon": corralon,
+                "lugar": lugar
+            }
+
+            v["multas"].append(multa)
+            agregar_historial(v, "Se registró una multa")
+            guardar_datos(vehiculos)
+            return True, "Multa agregada."
+
+    return False, "Vehículo no encontrado."

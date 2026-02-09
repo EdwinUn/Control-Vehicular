@@ -26,6 +26,22 @@ def iniciar_app():
         entry.grid(row=i, column=1, padx=10, pady=5)
         entradas[texto.lower()] = entry
 
+    tk.Label(ventana, text="Fecha multa").grid(row=14, column=0)
+    entry_fecha = tk.Entry(ventana)
+    entry_fecha.grid(row=14, column=1)
+
+    tk.Label(ventana, text="# Multas persona").grid(row=15, column=0)
+    entry_num_multas = tk.Entry(ventana)
+    entry_num_multas.grid(row=15, column=1)
+
+    tk.Label(ventana, text="¿Corralón? (Sí/No)").grid(row=16, column=0)
+    entry_corralon = tk.Entry(ventana)
+    entry_corralon.grid(row=16, column=1)
+
+    tk.Label(ventana, text="Lugar multa").grid(row=17, column=0)
+    entry_lugar = tk.Entry(ventana)
+    entry_lugar.grid(row=17, column=1)
+
     # =========================
     # 🚗 FUNCIÓN REGISTRAR
     # =========================
