@@ -1,11 +1,10 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QFormLayout, QLineEdit, QPushButton, QTextEdit,
-    QMessageBox, QStackedWidget, QLabel
+    QMessageBox, QStackedWidget, QLabel, QScrollArea
 )
 from PySide6.QtCore import Qt
 import vehiculos
-
 
 class VentanaPrincipal(QMainWindow):
     def __init__(self):
@@ -49,34 +48,131 @@ class VentanaPrincipal(QMainWindow):
         self.btn_multas.clicked.connect(lambda: self.stack.setCurrentIndex(2))
         self.btn_lista.clicked.connect(lambda: self.stack.setCurrentIndex(3))
 
-# =====================================================
+    # =====================================================
     # 🧾 PANTALLA 1 — REGISTRAR / EDITAR (CORREGIDA)
     # =====================================================
     def pantalla_formulario(self):
         widget = QWidget()
+        layout_principal = QVBoxLayout(widget)
+        layout_principal.setContentsMargins(40, 20, 40, 20)
+
+        # ✅ SOLO UN STACK
+        self.stack_form = QStackedWidget()
+        layout_principal.addWidget(self.stack_form)
+
+        # =====================================================
+        # 🟦 PANTALLA A — MENÚ DE OPCIONES
+        # =====================================================
+        menu_widget = QWidget()
+        menu_layout = QVBoxLayout(menu_widget)
+
+        titulo = QLabel("¿Qué deseas hacer?")
+        titulo.setAlignment(Qt.AlignCenter)
+        titulo.setStyleSheet("font-size:18px; font-weight:bold;")
+
+        btn_ir_registrar = QPushButton("Registrar Vehículo")
+        btn_ir_editar = QPushButton("Editar Vehículo")
+
+        btn_ir_registrar.setMinimumHeight(50)
+        btn_ir_editar.setMinimumHeight(50)
+
+        btn_ir_registrar.clicked.connect(lambda: self.stack_form.setCurrentIndex(1))
+        btn_ir_editar.clicked.connect(lambda: self.stack_form.setCurrentIndex(2))
+
+        menu_layout.addWidget(titulo)
+        menu_layout.addSpacing(20)
+        menu_layout.addWidget(btn_ir_registrar)
+        menu_layout.addWidget(btn_ir_editar)
+        menu_layout.addStretch()
+
+        # 🔥 ESTE FALTABA
+        self.stack_form.addWidget(menu_widget)
+
+        # 🟩 REGISTRAR
+        self.stack_form.addWidget(self.crear_formulario(modo="registrar"))
+
+        # 🟨 EDITAR
+        editar_widget = QWidget()
+        editar_layout = QVBoxLayout(editar_widget)
+
+        self.stack_editar = QStackedWidget()
+        editar_layout.addWidget(self.stack_editar)
+
+        # PASO 1
+        buscar_widget = QWidget()
+        buscar_layout = QVBoxLayout(buscar_widget)
+
+        titulo = QLabel("Ingrese la placa a editar")
+        titulo.setAlignment(Qt.AlignCenter)
+
+        self.input_placa_editar = QLineEdit()
+        self.input_placa_editar.setPlaceholderText("Placa")
+
+        btn_buscar_editar = QPushButton("Buscar Vehículo")
+        btn_buscar_editar.clicked.connect(self.cargar_datos_editar)
+
+        btn_volver_menu = QPushButton("⬅ Volver")
+        btn_volver_menu.clicked.connect(lambda: self.stack_form.setCurrentIndex(0))
+
+        buscar_layout.addWidget(titulo)
+        buscar_layout.addWidget(self.input_placa_editar)
+        buscar_layout.addWidget(btn_buscar_editar)
+        buscar_layout.addWidget(btn_volver_menu)
+        buscar_layout.addStretch()
+
+        self.stack_editar.addWidget(buscar_widget)
+
+        # PASO 2
+        self.form_editar = self.crear_formulario(modo="editar")
+        self.stack_editar.addWidget(self.form_editar)
+
+        self.stack_form.addWidget(editar_widget)
+
+        # 👉 AGREGAR ESTA PANTALLA AL STACK PRINCIPAL
+        self.stack.addWidget(widget)
+
+    def crear_formulario(self, modo):
+        widget = QWidget()
         layout = QVBoxLayout(widget)
-        
-        # 1. Contenedor del Formulario
+
         contenedor_form = QWidget()
         form = QFormLayout(contenedor_form)
-        
-        # Configurar márgenes para que no se vea tan pegado a las orillas
-        form.setContentsMargins(10, 10, 10, 10)
-        form.setSpacing(10)
 
-        self.campos = {}
-        labels = ["placa", "marca", "modelo", "año", "color", "tipo", "propietario", "telefono"]
+        campos_local = {}
+        labels = ["placa", "marca", "modelo", "anio", "color", "tipo", "propietario", "telefono"]
 
         for label in labels:
             entrada = QLineEdit()
-            self.campos[label] = entrada
-            form.addRow(label.capitalize() + ":", entrada)
+            campos_local[label] = entrada
+            texto_label = "Año" if label == "anio" else label.capitalize()
+            form.addRow(texto_label + ":", entrada)
 
-        # 3. Organización en el Layout Principal de la pantalla
-        layout.addWidget(contenedor_form) # Añade el bloque de campos
-        layout.addStretch()               # ESTO empuja todo lo anterior hacia arriba
 
-        self.stack.addWidget(widget)
+        btn_accion = QPushButton("Guardar")
+
+        if modo == "registrar":
+            self.campos_registro = campos_local
+            btn_accion.clicked.connect(self.registrar)
+        else:
+            self.campos_edicion = campos_local
+            btn_accion.clicked.connect(self.editar)
+
+        btn_volver = QPushButton("⬅ Volver")
+        btn_volver.clicked.connect(lambda: self.stack_form.setCurrentIndex(0))
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(contenedor_form)
+
+        layout.addWidget(scroll)
+
+        layout.addWidget(btn_accion)
+        layout.addWidget(btn_volver)
+        layout.addSpacing(15)
+        layout.addStretch()
+
+        return widget
+
     # =====================================================
     # 🔎 PANTALLA 2 — BUSCAR
     # =====================================================
@@ -103,7 +199,10 @@ class VentanaPrincipal(QMainWindow):
     # =====================================================
     def pantalla_multas(self):
         widget = QWidget()
-        layout = QFormLayout(widget)
+        layout_principal = QVBoxLayout(widget)
+
+        form = QFormLayout()
+        layout_principal.addLayout(form)
 
         self.multa_placa = QLineEdit()
         self.entry_fecha = QLineEdit()
@@ -111,17 +210,20 @@ class VentanaPrincipal(QMainWindow):
         self.entry_corralon = QLineEdit()
         self.entry_lugar = QLineEdit()
 
-        layout.addRow("Placa", self.multa_placa)
-        layout.addRow("Fecha", self.entry_fecha)
-        layout.addRow("# Multas persona", self.entry_num_multas)
-        layout.addRow("¿Corralón?", self.entry_corralon)
-        layout.addRow("Lugar", self.entry_lugar)
+        form.addRow("Placa", self.multa_placa)
+        form.addRow("Fecha", self.entry_fecha)
+        form.addRow("# Multas persona", self.entry_num_multas)
+        form.addRow("¿Corralón?", self.entry_corralon)
+        form.addRow("Lugar", self.entry_lugar)
 
         btn = QPushButton("Registrar Multa")
         btn.clicked.connect(self.registrar_multa)
 
-        layout.addRow(btn)
+        layout_principal.addWidget(btn)
+        layout_principal.addStretch()
+
         self.stack.addWidget(widget)
+
 
     # =====================================================
     # 📄 PANTALLA 4 — LISTA
@@ -143,11 +245,12 @@ class VentanaPrincipal(QMainWindow):
     # ================= FUNCIONES LÓGICAS =================
 
     def registrar(self):
-        datos = {k: v.text() for k, v in self.campos.items()}
+        datos = {k: v.text() for k, v in self.campos_registro.items()}
         datos["placa"] = datos["placa"].upper()
 
         exito, mensaje = vehiculos.registrar_vehiculo(datos)
         QMessageBox.information(self, "Resultado", mensaje)
+
 
     def buscar(self):
         placa = self.buscar_placa.text().strip().upper()
@@ -170,13 +273,16 @@ class VentanaPrincipal(QMainWindow):
         self.resultado_busqueda.setText(info)
 
     def editar(self):
-        placa = self.campos["placa"].text()
-        nuevos = {k: v.text() for k, v in self.campos.items() if k != "placa"}
+        placa = self.campos_edicion["placa"].text()
+        nuevos = {k: v.text() for k, v in self.campos_edicion.items() if k != "placa"}
+
         exito, mensaje = vehiculos.editar_vehiculo(placa, nuevos)
         QMessageBox.information(self, "Resultado", mensaje)
 
+        self.stack_editar.setCurrentIndex(0)
+
     def cambiar_estado(self):
-        placa = self.campos["placa"].text()
+        placa = self.campos_edicion["placa"].text()
         exito, mensaje = vehiculos.cambiar_estado(placa, "Reportado")
         QMessageBox.information(self, "Resultado", mensaje)
 
@@ -195,4 +301,24 @@ class VentanaPrincipal(QMainWindow):
 
         exito, mensaje = vehiculos.agregar_multa(placa, fecha, num, corralon, lugar)
         QMessageBox.information(self, "Resultado", mensaje)
+        
+    def cargar_datos_editar(self):
+        placa = self.input_placa_editar.text().strip().upper()
+
+        vehiculo = vehiculos.buscar_por_placa(placa)
+        if not vehiculo:
+            QMessageBox.warning(self, "Error", "Vehículo no encontrado")
+            return
+
+        # Llenar formulario
+        for campo, entrada in self.campos_edicion.items():
+            entrada.setText(str(vehiculo.get(campo, "")))
+
+        # La placa no se debe modificar
+        self.campos_edicion["placa"].setEnabled(False)
+
+        self.stack_editar.setCurrentIndex(1)
+
+        
+    
 

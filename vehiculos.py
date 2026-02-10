@@ -2,7 +2,6 @@ import json
 import os
 from datetime import datetime
 
-# 📍 Ruta absoluta al JSON (SIEMPRE el mismo archivo)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_DATOS = os.path.join(BASE_DIR, "datos.json")
 
@@ -17,10 +16,11 @@ def cargar_datos():
         with open(ARCHIVO_DATOS, "r", encoding="utf-8") as archivo:
             vehiculos = json.load(archivo)
 
-            # Asegurar que todos tengan el campo multas
             for v in vehiculos:
                 if "multas" not in v:
                     v["multas"] = []
+                if "historial" not in v:
+                    v["historial"] = []
 
             return vehiculos
     except:
@@ -39,17 +39,17 @@ def guardar_datos(lista_vehiculos):
 def registrar_vehiculo(datos):
     vehiculos = cargar_datos()
 
-    # Validar placa única
+    datos["placa"] = str(datos["placa"]).strip().upper()
+
     if any(v["placa"] == datos["placa"] for v in vehiculos):
         return False, "La placa ya está registrada."
 
-    # Validar año
-    if not str(datos["año"]).isdigit():
+    # 🔧 CAMBIO AQUÍ → anio SIN Ñ
+    if not str(datos["anio"]).isdigit():
         return False, "El año debe ser numérico."
 
-    datos["placa"] = str(datos["placa"]).strip().upper()
+    datos["anio"] = str(datos["anio"])
     datos["estado"] = "Activo"
-
     datos["historial"] = []
     datos["multas"] = []
 
@@ -68,11 +68,12 @@ def buscar_por_placa(placa):
     placa = str(placa).strip().upper()
 
     for v in vehiculos:
-        placa_guardada = str(v.get("placa", "")).strip().upper()
-        if placa_guardada == placa:
+        if str(v.get("placa", "")).strip().upper() == placa:
             return v
 
     return None
+
+
 # ===============================
 # ✏️ EDITAR VEHÍCULO
 # ===============================
@@ -83,7 +84,7 @@ def editar_vehiculo(placa, nuevos_datos):
     for v in vehiculos:
         if v["placa"] == placa:
             for clave in nuevos_datos:
-                if clave in v and clave not in ["placa", "historial"]:
+                if clave in v and clave not in ["placa", "historial", "multas"]:
                     v[clave] = nuevos_datos[clave]
 
             agregar_historial(v, "Datos del vehículo modificados")
@@ -131,7 +132,10 @@ def agregar_historial(vehiculo, evento):
     fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
     vehiculo["historial"].append(f"{fecha} - {evento}")
 
-#Multas
+
+# ===============================
+# 🚨 MULTAS
+# ===============================
 
 def agregar_multa(placa, fecha, numero_multas, corralon, lugar):
     vehiculos = cargar_datos()
@@ -151,6 +155,7 @@ def agregar_multa(placa, fecha, numero_multas, corralon, lugar):
             return True, "Multa agregada."
 
     return False, "Vehículo no encontrado."
+
 
 def contar_multas(placa):
     vehiculos = cargar_datos()
