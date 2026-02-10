@@ -2,8 +2,9 @@ import json
 import os
 from datetime import datetime
 
-ARCHIVO_DATOS = "datos.json"
-
+# 📍 Ruta absoluta al JSON (SIEMPRE el mismo archivo)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ARCHIVO_DATOS = os.path.join(BASE_DIR, "datos.json")
 
 # ===============================
 # 📂 MANEJO DE ARCHIVO
@@ -46,7 +47,9 @@ def registrar_vehiculo(datos):
     if not str(datos["año"]).isdigit():
         return False, "El año debe ser numérico."
 
+    datos["placa"] = str(datos["placa"]).strip().upper()
     datos["estado"] = "Activo"
+
     datos["historial"] = []
     datos["multas"] = []
 
@@ -62,12 +65,14 @@ def registrar_vehiculo(datos):
 
 def buscar_por_placa(placa):
     vehiculos = cargar_datos()
+    placa = str(placa).strip().upper()
+
     for v in vehiculos:
-        if v["placa"] == placa:
+        placa_guardada = str(v.get("placa", "")).strip().upper()
+        if placa_guardada == placa:
             return v
+
     return None
-
-
 # ===============================
 # ✏️ EDITAR VEHÍCULO
 # ===============================

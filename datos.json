@@ -1,276 +1,298 @@
 [
-  {
-    "placa": "ABC123",
-    "marca": "Nissan",
-    "modelo": "Versa",
-    "año": "2020",
-    "color": "Rojo",
-    "tipo": "Auto",
-    "propietario": "Juan Pérez",
-    "telefono": "999123456",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "DEF456",
-    "marca": "Toyota",
-    "modelo": "Corolla",
-    "año": "2019",
-    "color": "Gris",
-    "tipo": "Auto",
-    "propietario": "Luis Gómez",
-    "telefono": "999222333",
-    "estado": "Activo",
-    "historial": ["09/02/2026 10:15 - Se registró una multa"],
-    "multas": [
-      {
-        "fecha": "09/02/2026",
-        "numero_multas": "1",
-        "corralon": "No",
-        "lugar": "Av. Reforma"
-      }
-    ]
-  },
-  {
-    "placa": "GHI789",
-    "marca": "Honda",
-    "modelo": "Civic",
-    "año": "2018",
-    "color": "Negro",
-    "tipo": "Auto",
-    "propietario": "Carlos Ruiz",
-    "telefono": "999333444",
-    "estado": "Reportado",
-    "historial": ["08/02/2026 12:00 - Estado cambiado a Reportado"],
-    "multas": []
-  },
-  {
-    "placa": "JKL321",
-    "marca": "Mazda",
-    "modelo": "3",
-    "año": "2021",
-    "color": "Azul",
-    "tipo": "Auto",
-    "propietario": "Ana Torres",
-    "telefono": "999444555",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "MNO654",
-    "marca": "Ford",
-    "modelo": "Focus",
-    "año": "2017",
-    "color": "Blanco",
-    "tipo": "Auto",
-    "propietario": "Pedro López",
-    "telefono": "999555666",
-    "estado": "Baja",
-    "historial": ["07/02/2026 09:30 - Estado cambiado a Baja"],
-    "multas": []
-  },
-  {
-    "placa": "PQR987",
-    "marca": "Chevrolet",
-    "modelo": "Spark",
-    "año": "2016",
-    "color": "Verde",
-    "tipo": "Auto",
-    "propietario": "Miguel Díaz",
-    "telefono": "999666777",
-    "estado": "Activo",
-    "historial": ["06/02/2026 16:20 - Se registró una multa"],
-    "multas": [
-      {
-        "fecha": "06/02/2026",
-        "numero_multas": "2",
-        "corralon": "Sí",
-        "lugar": "Centro"
-      }
-    ]
-  },
-  {
-    "placa": "STU741",
-    "marca": "Volkswagen",
-    "modelo": "Jetta",
-    "año": "2022",
-    "color": "Rojo",
-    "tipo": "Auto",
-    "propietario": "Laura Méndez",
-    "telefono": "999777888",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "VWX852",
-    "marca": "Kia",
-    "modelo": "Rio",
-    "año": "2020",
-    "color": "Plata",
-    "tipo": "Auto",
-    "propietario": "Sofía Herrera",
-    "telefono": "999888999",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "YZA963",
-    "marca": "Hyundai",
-    "modelo": "Accent",
-    "año": "2019",
-    "color": "Azul",
-    "tipo": "Auto",
-    "propietario": "Daniel Castro",
-    "telefono": "999111222",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "BCD147",
-    "marca": "Renault",
-    "modelo": "Kwid",
-    "año": "2021",
-    "color": "Amarillo",
-    "tipo": "Auto",
-    "propietario": "Valeria Soto",
-    "telefono": "999222111",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "EFG258",
-    "marca": "Seat",
-    "modelo": "Ibiza",
-    "año": "2018",
-    "color": "Gris",
-    "tipo": "Auto",
-    "propietario": "José Ramírez",
-    "telefono": "999333222",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "HIJ369",
-    "marca": "Peugeot",
-    "modelo": "208",
-    "año": "2017",
-    "color": "Blanco",
-    "tipo": "Auto",
-    "propietario": "Mariana Cruz",
-    "telefono": "999444333",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "KLM159",
-    "marca": "Suzuki",
-    "modelo": "Swift",
-    "año": "2020",
-    "color": "Negro",
-    "tipo": "Auto",
-    "propietario": "Andrés Molina",
-    "telefono": "999555444",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "NOP753",
-    "marca": "Subaru",
-    "modelo": "Impreza",
-    "año": "2019",
-    "color": "Azul",
-    "tipo": "Auto",
-    "propietario": "Gabriela León",
-    "telefono": "999666555",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "QRS852",
-    "marca": "BMW",
-    "modelo": "Serie 3",
-    "año": "2022",
-    "color": "Blanco",
-    "tipo": "Auto",
-    "propietario": "Ricardo Vega",
-    "telefono": "999777666",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "TUV951",
-    "marca": "Audi",
-    "modelo": "A3",
-    "año": "2021",
-    "color": "Gris",
-    "tipo": "Auto",
-    "propietario": "Paola Jiménez",
-    "telefono": "999888777",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "WXY357",
-    "marca": "Mercedes",
-    "modelo": "Clase A",
-    "año": "2023",
-    "color": "Negro",
-    "tipo": "Auto",
-    "propietario": "Fernando Salas",
-    "telefono": "999999111",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "ZAB468",
-    "marca": "Tesla",
-    "modelo": "Model 3",
-    "año": "2023",
-    "color": "Rojo",
-    "tipo": "Auto",
-    "propietario": "Elena Pardo",
-    "telefono": "999123789",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "CDE579",
-    "marca": "Jeep",
-    "modelo": "Renegade",
-    "año": "2018",
-    "color": "Verde",
-    "tipo": "Auto",
-    "propietario": "Jorge Nitales",
-    "telefono": "999321987",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  },
-  {
-    "placa": "FGH680",
-    "marca": "Dodge",
-    "modelo": "Attitude",
-    "año": "2017",
-    "color": "Azul",
-    "tipo": "Auto",
-    "propietario": "Lucía Ríos",
-    "telefono": "999654321",
-    "estado": "Activo",
-    "historial": [],
-    "multas": []
-  }
+    {
+        "placa": "ABC123",
+        "marca": "",
+        "modelo": "",
+        "año": "",
+        "color": "",
+        "tipo": "",
+        "propietario": "",
+        "telefono": "",
+        "estado": "Reportado",
+        "historial": [
+            "10/02/2026 11:43 - Datos del vehículo modificados",
+            "10/02/2026 11:45 - Datos del vehículo modificados",
+            "10/02/2026 11:46 - Estado cambiado a Reportado",
+            "10/02/2026 11:46 - Estado cambiado a Reportado",
+            "10/02/2026 11:46 - Estado cambiado a Reportado",
+            "10/02/2026 11:46 - Se registró una multa"
+        ],
+        "multas": [
+            {
+                "fecha": "",
+                "numero_multas": "",
+                "corralon": "",
+                "lugar": ""
+            }
+        ]
+    },
+    {
+        "placa": "DEF456",
+        "marca": "Toyota",
+        "modelo": "Corolla",
+        "año": "2019",
+        "color": "Gris",
+        "tipo": "Auto",
+        "propietario": "Luis Gómez",
+        "telefono": "999222333",
+        "estado": "Activo",
+        "historial": [
+            "09/02/2026 10:15 - Se registró una multa"
+        ],
+        "multas": [
+            {
+                "fecha": "09/02/2026",
+                "numero_multas": "1",
+                "corralon": "No",
+                "lugar": "Av. Reforma"
+            }
+        ]
+    },
+    {
+        "placa": "GHI789",
+        "marca": "Honda",
+        "modelo": "Civic",
+        "año": "2018",
+        "color": "Negro",
+        "tipo": "Auto",
+        "propietario": "Carlos Ruiz",
+        "telefono": "999333444",
+        "estado": "Reportado",
+        "historial": [
+            "08/02/2026 12:00 - Estado cambiado a Reportado"
+        ],
+        "multas": []
+    },
+    {
+        "placa": "JKL321",
+        "marca": "Mazda",
+        "modelo": "3",
+        "año": "2021",
+        "color": "Azul",
+        "tipo": "Auto",
+        "propietario": "Ana Torres",
+        "telefono": "999444555",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "MNO654",
+        "marca": "Ford",
+        "modelo": "Focus",
+        "año": "2017",
+        "color": "Blanco",
+        "tipo": "Auto",
+        "propietario": "Pedro López",
+        "telefono": "999555666",
+        "estado": "Baja",
+        "historial": [
+            "07/02/2026 09:30 - Estado cambiado a Baja"
+        ],
+        "multas": []
+    },
+    {
+        "placa": "PQR987",
+        "marca": "Chevrolet",
+        "modelo": "Spark",
+        "año": "2016",
+        "color": "Verde",
+        "tipo": "Auto",
+        "propietario": "Miguel Díaz",
+        "telefono": "999666777",
+        "estado": "Activo",
+        "historial": [
+            "06/02/2026 16:20 - Se registró una multa"
+        ],
+        "multas": [
+            {
+                "fecha": "06/02/2026",
+                "numero_multas": "2",
+                "corralon": "Sí",
+                "lugar": "Centro"
+            }
+        ]
+    },
+    {
+        "placa": "STU741",
+        "marca": "Volkswagen",
+        "modelo": "Jetta",
+        "año": "2022",
+        "color": "Rojo",
+        "tipo": "Auto",
+        "propietario": "Laura Méndez",
+        "telefono": "999777888",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "VWX852",
+        "marca": "Kia",
+        "modelo": "Rio",
+        "año": "2020",
+        "color": "Plata",
+        "tipo": "Auto",
+        "propietario": "Sofía Herrera",
+        "telefono": "999888999",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "YZA963",
+        "marca": "Hyundai",
+        "modelo": "Accent",
+        "año": "2019",
+        "color": "Azul",
+        "tipo": "Auto",
+        "propietario": "Daniel Castro",
+        "telefono": "999111222",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "BCD147",
+        "marca": "Renault",
+        "modelo": "Kwid",
+        "año": "2021",
+        "color": "Amarillo",
+        "tipo": "Auto",
+        "propietario": "Valeria Soto",
+        "telefono": "999222111",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "EFG258",
+        "marca": "Seat",
+        "modelo": "Ibiza",
+        "año": "2018",
+        "color": "Gris",
+        "tipo": "Auto",
+        "propietario": "José Ramírez",
+        "telefono": "999333222",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "HIJ369",
+        "marca": "Peugeot",
+        "modelo": "208",
+        "año": "2017",
+        "color": "Blanco",
+        "tipo": "Auto",
+        "propietario": "Mariana Cruz",
+        "telefono": "999444333",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "KLM159",
+        "marca": "Suzuki",
+        "modelo": "Swift",
+        "año": "2020",
+        "color": "Negro",
+        "tipo": "Auto",
+        "propietario": "Andrés Molina",
+        "telefono": "999555444",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "NOP753",
+        "marca": "Subaru",
+        "modelo": "Impreza",
+        "año": "2019",
+        "color": "Azul",
+        "tipo": "Auto",
+        "propietario": "Gabriela León",
+        "telefono": "999666555",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "QRS852",
+        "marca": "BMW",
+        "modelo": "Serie 3",
+        "año": "2022",
+        "color": "Blanco",
+        "tipo": "Auto",
+        "propietario": "Ricardo Vega",
+        "telefono": "999777666",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "TUV951",
+        "marca": "Audi",
+        "modelo": "A3",
+        "año": "2021",
+        "color": "Gris",
+        "tipo": "Auto",
+        "propietario": "Paola Jiménez",
+        "telefono": "999888777",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "WXY357",
+        "marca": "Mercedes",
+        "modelo": "Clase A",
+        "año": "2023",
+        "color": "Negro",
+        "tipo": "Auto",
+        "propietario": "Fernando Salas",
+        "telefono": "999999111",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "ZAB468",
+        "marca": "Tesla",
+        "modelo": "Model 3",
+        "año": "2023",
+        "color": "Rojo",
+        "tipo": "Auto",
+        "propietario": "Elena Pardo",
+        "telefono": "999123789",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "CDE579",
+        "marca": "Jeep",
+        "modelo": "Renegade",
+        "año": "2018",
+        "color": "Verde",
+        "tipo": "Auto",
+        "propietario": "Jorge Nitales",
+        "telefono": "999321987",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    },
+    {
+        "placa": "FGH680",
+        "marca": "Dodge",
+        "modelo": "Attitude",
+        "año": "2017",
+        "color": "Azul",
+        "tipo": "Auto",
+        "propietario": "Lucía Ríos",
+        "telefono": "999654321",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
+    }
 ]
