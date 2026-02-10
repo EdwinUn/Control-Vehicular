@@ -1,31 +1,5 @@
 [
-    {
-        "placa": "ABC123",
-        "marca": "",
-        "modelo": "",
-        "año": "",
-        "color": "",
-        "tipo": "",
-        "propietario": "",
-        "telefono": "",
-        "estado": "Reportado",
-        "historial": [
-            "10/02/2026 11:43 - Datos del vehículo modificados",
-            "10/02/2026 11:45 - Datos del vehículo modificados",
-            "10/02/2026 11:46 - Estado cambiado a Reportado",
-            "10/02/2026 11:46 - Estado cambiado a Reportado",
-            "10/02/2026 11:46 - Estado cambiado a Reportado",
-            "10/02/2026 11:46 - Se registró una multa"
-        ],
-        "multas": [
-            {
-                "fecha": "",
-                "numero_multas": "",
-                "corralon": "",
-                "lugar": ""
-            }
-        ]
-    },
+
     {
         "placa": "DEF456",
         "marca": "Toyota",

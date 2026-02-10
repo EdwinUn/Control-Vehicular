@@ -1,25 +1,68 @@
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QFormLayout,
-    QLineEdit, QPushButton, QTextEdit, QMessageBox
+    QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
+    QFormLayout, QLineEdit, QPushButton, QTextEdit,
+    QMessageBox, QStackedWidget, QLabel
 )
+from PySide6.QtCore import Qt
 import vehiculos
 
 
 class VentanaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.setWindowTitle("Sistema de Control Vehicular")
-        self.setGeometry(200, 50, 600, 700)
+        self.setGeometry(200, 50, 900, 600)
 
-        # 📦 Contenedor principal
+        # ================== CONTENEDOR PRINCIPAL ==================
         contenedor = QWidget()
         self.setCentralWidget(contenedor)
-        layout = QVBoxLayout(contenedor)
+        layout_principal = QHBoxLayout(contenedor)
 
-        # 🧾 Formulario datos vehículo
-        form = QFormLayout()
-        layout.addLayout(form)
+        # ================== MENÚ LATERAL ==================
+        menu = QVBoxLayout()
+        layout_principal.addLayout(menu, 1)
+
+        self.btn_registrar = QPushButton("Registrar / Editar")
+        self.btn_buscar = QPushButton("Buscar Vehículo")
+        self.btn_multas = QPushButton("Multas")
+        self.btn_lista = QPushButton("Lista Vehículos")
+
+        for b in [self.btn_registrar, self.btn_buscar, self.btn_multas, self.btn_lista]:
+            b.setMinimumHeight(40)
+            menu.addWidget(b)
+
+        menu.addStretch()
+
+        # ================== ÁREA DINÁMICA ==================
+        self.stack = QStackedWidget()
+        layout_principal.addWidget(self.stack, 4)
+
+        # Crear pantallas
+        self.pantalla_formulario()
+        self.pantalla_buscar()
+        self.pantalla_multas()
+        self.pantalla_lista()
+
+        # Conexiones del menú
+        self.btn_registrar.clicked.connect(lambda: self.stack.setCurrentIndex(0))
+        self.btn_buscar.clicked.connect(lambda: self.stack.setCurrentIndex(1))
+        self.btn_multas.clicked.connect(lambda: self.stack.setCurrentIndex(2))
+        self.btn_lista.clicked.connect(lambda: self.stack.setCurrentIndex(3))
+
+# =====================================================
+    # 🧾 PANTALLA 1 — REGISTRAR / EDITAR (CORREGIDA)
+    # =====================================================
+    def pantalla_formulario(self):
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+        
+        # 1. Contenedor del Formulario
+        contenedor_form = QWidget()
+        form = QFormLayout(contenedor_form)
+        
+        # Configurar márgenes para que no se vea tan pegado a las orillas
+        form.setContentsMargins(10, 10, 10, 10)
+        form.setSpacing(10)
 
         self.campos = {}
         labels = ["placa", "marca", "modelo", "año", "color", "tipo", "propietario", "telefono"]
@@ -27,63 +70,89 @@ class VentanaPrincipal(QMainWindow):
         for label in labels:
             entrada = QLineEdit()
             self.campos[label] = entrada
-            form.addRow(label.capitalize(), entrada)
+            form.addRow(label.capitalize() + ":", entrada)
 
-        # 🚨 Multas
+        # 3. Organización en el Layout Principal de la pantalla
+        layout.addWidget(contenedor_form) # Añade el bloque de campos
+        layout.addStretch()               # ESTO empuja todo lo anterior hacia arriba
+
+        self.stack.addWidget(widget)
+    # =====================================================
+    # 🔎 PANTALLA 2 — BUSCAR
+    # =====================================================
+    def pantalla_buscar(self):
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+
+        self.buscar_placa = QLineEdit()
+        self.buscar_placa.setPlaceholderText("Placa")
+
+        btn = QPushButton("Buscar")
+        btn.clicked.connect(self.buscar)
+
+        self.resultado_busqueda = QTextEdit()
+
+        layout.addWidget(self.buscar_placa)
+        layout.addWidget(btn)
+        layout.addWidget(self.resultado_busqueda)
+
+        self.stack.addWidget(widget)
+
+    # =====================================================
+    # 🚨 PANTALLA 3 — MULTAS
+    # =====================================================
+    def pantalla_multas(self):
+        widget = QWidget()
+        layout = QFormLayout(widget)
+
+        self.multa_placa = QLineEdit()
         self.entry_fecha = QLineEdit()
         self.entry_num_multas = QLineEdit()
         self.entry_corralon = QLineEdit()
         self.entry_lugar = QLineEdit()
 
-        form.addRow("Fecha multa", self.entry_fecha)
-        form.addRow("# Multas persona", self.entry_num_multas)
-        form.addRow("¿Corralón?", self.entry_corralon)
-        form.addRow("Lugar multa", self.entry_lugar)
+        layout.addRow("Placa", self.multa_placa)
+        layout.addRow("Fecha", self.entry_fecha)
+        layout.addRow("# Multas persona", self.entry_num_multas)
+        layout.addRow("¿Corralón?", self.entry_corralon)
+        layout.addRow("Lugar", self.entry_lugar)
 
-        # 📄 Área de resultados
-        self.resultado = QTextEdit()
-        layout.addWidget(self.resultado)
+        btn = QPushButton("Registrar Multa")
+        btn.clicked.connect(self.registrar_multa)
 
-        # 🔘 Botones
-        botones = [
-            ("Registrar Vehículo", self.registrar),
-            ("Buscar Vehículo", self.buscar),
-            ("Editar Vehículo", self.editar),
-            ("Cambiar Estado", self.cambiar_estado),
-            ("Listar Vehículos", self.listar),
-            ("Registrar Multa", self.registrar_multa)
-        ]
+        layout.addRow(btn)
+        self.stack.addWidget(widget)
 
-        for texto, funcion in botones:
-            boton = QPushButton(texto)
-            boton.clicked.connect(funcion)
-            layout.addWidget(boton)
+    # =====================================================
+    # 📄 PANTALLA 4 — LISTA
+    # =====================================================
+    def pantalla_lista(self):
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
 
-    # ================= FUNCIONES =================
+        btn = QPushButton("Actualizar Lista")
+        btn.clicked.connect(self.listar)
+
+        self.resultado_lista = QTextEdit()
+
+        layout.addWidget(btn)
+        layout.addWidget(self.resultado_lista)
+
+        self.stack.addWidget(widget)
+
+    # ================= FUNCIONES LÓGICAS =================
 
     def registrar(self):
         datos = {k: v.text() for k, v in self.campos.items()}
         datos["placa"] = datos["placa"].upper()
 
-        if any(x.strip() == "" for x in datos.values()):
-            QMessageBox.critical(self, "Error", "Todos los campos son obligatorios")
-            return
-
         exito, mensaje = vehiculos.registrar_vehiculo(datos)
         QMessageBox.information(self, "Resultado", mensaje)
 
-        if exito:
-            for v in self.campos.values():
-                v.clear()
-
     def buscar(self):
-        placa = self.campos["placa"].text().strip().upper()
-
-        if placa == "":
-            QMessageBox.critical(self, "Error", "Ingresa una placa")
-            
+        placa = self.buscar_placa.text().strip().upper()
         vehiculo = vehiculos.buscar_por_placa(placa)
-        self.resultado.clear()
+        self.resultado_busqueda.clear()
 
         if not vehiculo:
             QMessageBox.critical(self, "Error", "Vehículo no encontrado")
@@ -94,26 +163,15 @@ class VentanaPrincipal(QMainWindow):
             if k not in ["historial", "multas"]:
                 info += f"{k.capitalize()}: {v}\n"
 
-        info += "\nHistorial:\n"
-        if vehiculo["historial"]:
-            for h in vehiculo["historial"]:
-                info += f"- {h}\n"
-        else:
-            info += "Sin registros\n"
-
         info += "\nMultas:\n"
-        if vehiculo["multas"]:
-            for m in vehiculo["multas"]:
-                info += f"- {m['fecha']} | {m['lugar']} | Corralón: {m['corralon']} | Multas persona: {m['numero_multas']}\n"
-        else:
-            info += "Sin multas\n"
-            
-        self.resultado.setText(info)
+        for m in vehiculo["multas"]:
+            info += f"- {m['fecha']} | {m['lugar']} | Corralón: {m['corralon']} | Multas persona: {m['numero_multas']}\n"
+
+        self.resultado_busqueda.setText(info)
 
     def editar(self):
         placa = self.campos["placa"].text()
         nuevos = {k: v.text() for k, v in self.campos.items() if k != "placa"}
-
         exito, mensaje = vehiculos.editar_vehiculo(placa, nuevos)
         QMessageBox.information(self, "Resultado", mensaje)
 
@@ -124,13 +182,12 @@ class VentanaPrincipal(QMainWindow):
 
     def listar(self):
         lista = vehiculos.listar_vehiculos()
-        self.resultado.clear()
-
+        self.resultado_lista.clear()
         for v in lista:
-            self.resultado.append(f"{v['placa']} | {v['marca']} {v['modelo']} | {v['estado']}")
+            self.resultado_lista.append(f"{v['placa']} | {v['marca']} {v['modelo']} | {v['estado']}")
 
     def registrar_multa(self):
-        placa = self.campos["placa"].text()
+        placa = self.multa_placa.text()
         fecha = self.entry_fecha.text()
         num = self.entry_num_multas.text()
         corralon = self.entry_corralon.text()
@@ -138,3 +195,4 @@ class VentanaPrincipal(QMainWindow):
 
         exito, mensaje = vehiculos.agregar_multa(placa, fecha, num, corralon, lugar)
         QMessageBox.information(self, "Resultado", mensaje)
+
