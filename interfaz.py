@@ -63,6 +63,7 @@ class VentanaPrincipal(QMainWindow):
 
     def registrar(self):
         datos = {k: v.text() for k, v in self.campos.items()}
+        datos["placa"] = datos["placa"].upper()
 
         if any(x.strip() == "" for x in datos.values()):
             QMessageBox.critical(self, "Error", "Todos los campos son obligatorios")
@@ -76,8 +77,11 @@ class VentanaPrincipal(QMainWindow):
                 v.clear()
 
     def buscar(self):
-        placa = self.campos["placa"].text().strip()
+        placa = self.campos["placa"].text().strip().upper()
 
+        if placa == "":
+            QMessageBox.critical(self, "Error", "Ingresa una placa")
+            
         vehiculo = vehiculos.buscar_por_placa(placa)
         self.resultado.clear()
 
@@ -91,13 +95,19 @@ class VentanaPrincipal(QMainWindow):
                 info += f"{k.capitalize()}: {v}\n"
 
         info += "\nHistorial:\n"
-        for h in vehiculo["historial"]:
-            info += f"- {h}\n"
+        if vehiculo["historial"]:
+            for h in vehiculo["historial"]:
+                info += f"- {h}\n"
+        else:
+            info += "Sin registros\n"
 
         info += "\nMultas:\n"
-        for m in vehiculo["multas"]:
-            info += f"- {m['fecha']} | {m['lugar']} | Corralón: {m['corralon']} | Multas persona: {m['numero_multas']}\n"
-
+        if vehiculo["multas"]:
+            for m in vehiculo["multas"]:
+                info += f"- {m['fecha']} | {m['lugar']} | Corralón: {m['corralon']} | Multas persona: {m['numero_multas']}\n"
+        else:
+            info += "Sin multas\n"
+            
         self.resultado.setText(info)
 
     def editar(self):
