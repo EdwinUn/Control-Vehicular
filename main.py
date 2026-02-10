@@ -1,4 +1,8 @@
-from interfaz import iniciar_app
+import sys
+from PySide6.QtWidgets import QApplication
+from interfaz import VentanaPrincipal
 
-if __name__ == "__main__":
-    iniciar_app()
+app = QApplication(sys.argv)
+ventana = VentanaPrincipal()
+ventana.show()
+sys.exit(app.exec())
