@@ -250,20 +250,42 @@ class VentanaPrincipal(QMainWindow):
     def pantalla_buscar(self):
         widget = QWidget()
         layout = QVBoxLayout(widget)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        titulo = QLabel("BÚSQUEDA DE VEHÍCULO")
+        titulo.setStyleSheet("font-size: 18px; font-weight: bold;")
+        layout.addWidget(titulo)
 
         self.buscar_placa = QLineEdit()
-        self.buscar_placa.setPlaceholderText("Placa")
+        self.buscar_placa.setPlaceholderText("Ingresa la placa")
 
         btn = QPushButton("Buscar")
         btn.clicked.connect(self.buscar)
 
-        self.resultado_busqueda = QTextEdit()
-
         layout.addWidget(self.buscar_placa)
         layout.addWidget(btn)
-        layout.addWidget(self.resultado_busqueda)
+
+        # 🔥 TABLA DE RESULTADO
+        self.tabla_busqueda = QTableWidget()
+        self.tabla_busqueda.setColumnCount(8)
+        self.tabla_busqueda.setHorizontalHeaderLabels([
+            "Placa", "Marca", "Modelo", "Año",
+            "Color", "Tipo", "Propietario", "Teléfono"
+        ])
+
+        # Ajustar columnas
+        header = self.tabla_busqueda.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
+
+        # 🚫 SOLO LECTURA
+        self.tabla_busqueda.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tabla_busqueda.setSelectionBehavior(QTableWidget.SelectRows)
+
+        self.tabla_busqueda.verticalHeader().setVisible(False)
+        layout.addWidget(self.tabla_busqueda)
 
         self.stack.addWidget(widget)
+
 
     # =====================================================
     # 🚨 PANTALLA 3 — MULTAS
@@ -321,6 +343,7 @@ class VentanaPrincipal(QMainWindow):
         header = self.tabla_vehiculos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
         
+        self.tabla_vehiculos.veticalHeader()
         layout.addWidget(self.tabla_vehiculos)
         self.stack.addWidget(widget)
 
@@ -359,22 +382,31 @@ class VentanaPrincipal(QMainWindow):
     def buscar(self):
         placa = self.buscar_placa.text().strip().upper()
         vehiculo = vehiculos.buscar_por_placa(placa)
-        self.resultado_busqueda.clear()
+
+        self.tabla_busqueda.setRowCount(0)
 
         if not vehiculo:
-            QMessageBox.critical(self, "Error", "Vehículo no encontrado")
+            QMessageBox.warning(self, "Error", "Vehículo no encontrado")
             return
 
-        info = ""
-        for k, v in vehiculo.items():
-            if k not in ["historial", "multas"]:
-                info += f"{k.capitalize()}: {v}\n"
+        self.tabla_busqueda.insertRow(0)
 
-        info += "\nMultas:\n"
-        for m in vehiculo["multas"]:
-            info += f"- {m['fecha']} | {m['lugar']} | Corralón: {m['corralon']} | Multas persona: {m['numero_multas']}\n"
+        datos = [
+            vehiculo.get("placa", ""),
+            vehiculo.get("marca", ""),
+            vehiculo.get("modelo", ""),
+            vehiculo.get("anio", ""),
+            vehiculo.get("color", ""),
+            vehiculo.get("tipo", ""),
+            vehiculo.get("propietario", ""),
+            vehiculo.get("telefono", "")
+        ]
 
-        self.resultado_busqueda.setText(info)
+        for col, valor in enumerate(datos):
+            item = QTableWidgetItem(str(valor))
+            item.setTextAlignment(Qt.AlignCenter)
+            self.tabla_busqueda.setItem(0, col, item)
+
 
     def editar(self):
         placa = self.campos_edicion["placa"].text()
