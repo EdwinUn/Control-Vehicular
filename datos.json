@@ -1,17 +1,17 @@
 [
-
     {
         "placa": "DEF456",
         "marca": "Toyota",
         "modelo": "Corolla",
-        "anio": "2019",
+        "anio": "2020",
         "color": "Gris",
         "tipo": "Auto",
         "propietario": "Luis Gómez",
         "telefono": "999222333",
         "estado": "Activo",
         "historial": [
-            "09/02/2026 10:15 - Se registró una multa"
+            "09/02/2026 10:15 - Se registró una multa",
+            "11/02/2026 07:06 - Datos del vehículo modificados"
         ],
         "multas": [
             {

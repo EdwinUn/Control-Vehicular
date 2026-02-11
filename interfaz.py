@@ -111,7 +111,7 @@ class VentanaPrincipal(QMainWindow):
         btn_buscar_editar = QPushButton("Buscar Vehículo")
         btn_buscar_editar.clicked.connect(self.cargar_datos_editar)
 
-        btn_volver_menu = QPushButton("⬅ Volver")
+        btn_volver_menu = QPushButton(" Volver ")
         btn_volver_menu.clicked.connect(lambda: self.stack_form.setCurrentIndex(0))
 
         buscar_layout.addWidget(titulo)
@@ -157,7 +157,7 @@ class VentanaPrincipal(QMainWindow):
             self.campos_edicion = campos_local
             btn_accion.clicked.connect(self.editar)
 
-        btn_volver = QPushButton("⬅ Volver")
+        btn_volver = QPushButton(" Volver ")
         btn_volver.clicked.connect(lambda: self.stack_form.setCurrentIndex(0))
 
         scroll = QScrollArea()
