@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QFormLayout, QLineEdit, QPushButton, QTextEdit,
-    QMessageBox, QStackedWidget, QLabel, QScrollArea
+    QMessageBox, QStackedWidget, QLabel, QScrollArea,
+    QTableWidget, QTableWidgetItem, QHeaderView  # <--- Nuevos
 )
 from PySide6.QtCore import Qt
 import vehiculos
@@ -10,16 +11,25 @@ class VentanaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Sistema de Control Vehicular")
-        self.setGeometry(200, 50, 900, 600)
+        self.setGeometry(200, 50, 1000, 650)
+        
+        self.aplicar_estilos()
 
         # ================== CONTENEDOR PRINCIPAL ==================
         contenedor = QWidget()
         self.setCentralWidget(contenedor)
         layout_principal = QHBoxLayout(contenedor)
+        layout_principal.setContentsMargins(0, 0, 0, 0)
+        layout_principal.setSpacing(0)
 
-        # ================== MENÚ LATERAL ==================
-        menu = QVBoxLayout()
-        layout_principal.addLayout(menu, 1)
+        # ================== SIDEBAR ==================
+        contenedor_menu = QWidget()
+        contenedor_menu.setObjectName("sidebar")
+        contenedor_menu.setFixedWidth(200)
+
+        menu_layout = QVBoxLayout(contenedor_menu)
+        menu_layout.setContentsMargins(10, 20, 10, 20)
+        menu_layout.setSpacing(10)
 
         self.btn_registrar = QPushButton("Registrar / Editar")
         self.btn_buscar = QPushButton("Buscar Vehículo")
@@ -28,26 +38,87 @@ class VentanaPrincipal(QMainWindow):
 
         for b in [self.btn_registrar, self.btn_buscar, self.btn_multas, self.btn_lista]:
             b.setMinimumHeight(40)
-            menu.addWidget(b)
+            menu_layout.addWidget(b)
 
-        menu.addStretch()
+        menu_layout.addStretch()
+
+        layout_principal.addWidget(contenedor_menu)
 
         # ================== ÁREA DINÁMICA ==================
         self.stack = QStackedWidget()
-        layout_principal.addWidget(self.stack, 4)
+        layout_principal.addWidget(self.stack)
+        
+        # ================== CREAR PANTALLAS ==================
+        self.pantalla_formulario()  # index 0
+        self.pantalla_buscar()      # index 1
+        self.pantalla_multas()      # index 2
+        self.pantalla_lista()       # index 3
 
-        # Crear pantallas
-        self.pantalla_formulario()
-        self.pantalla_buscar()
-        self.pantalla_multas()
-        self.pantalla_lista()
-
-        # Conexiones del menú
+        # ================== CONEXIONES DEL MENÚ ==================
         self.btn_registrar.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.btn_buscar.clicked.connect(lambda: self.stack.setCurrentIndex(1))
         self.btn_multas.clicked.connect(lambda: self.stack.setCurrentIndex(2))
         self.btn_lista.clicked.connect(lambda: self.stack.setCurrentIndex(3))
 
+
+    #Estilos de la página
+    def aplicar_estilos(self):
+        self.setStyleSheet("""
+            QMainWindow { background-color: #1e1e1e; }
+            QWidget { color: #d4d4d4; font-family: 'Segoe UI', sans-serif; }
+            
+            /* Menú Lateral */
+            #sidebar { 
+                background-color: #252526; 
+                border-right: 1px solid #333; 
+            }
+            
+            /* Botones del Menú */
+            QPushButton {
+                background-color: #2d2d2d;
+                color: #cccccc;
+                border: 1px solid #3c3c3c;
+                border-radius: 4px;
+                padding: 10px;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background-color: #3e3e42;
+                border-color: #007acc;
+                color: white;
+            }
+            QPushButton:pressed {
+                background-color: #007acc;
+            }
+
+            /* Inputs */
+            QLineEdit {
+                background-color: #3c3c3c;
+                border: 1px solid #555;
+                border-radius: 3px;
+                padding: 6px;
+                color: white;
+            }
+            QLineEdit:focus {
+                border: 1px solid #007acc;
+            }
+
+            /* Tabla */
+            QTableWidget {
+                background-color: #252526;
+                gridline-color: #333333;
+                border: 1px solid #333;
+                selection-background-color: #264f78;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #333333;
+                color: #cccccc;
+                padding: 8px;
+                border: 1px solid #444;
+                font-weight: bold;
+            }
+        """)
     # =====================================================
     # 🧾 PANTALLA 1 — REGISTRAR / EDITAR (CORREGIDA)
     # =====================================================
@@ -226,21 +297,54 @@ class VentanaPrincipal(QMainWindow):
 
 
     # =====================================================
-    # 📄 PANTALLA 4 — LISTA
+    # 📄 PANTALLA 4 — LISTA (ACTUALIZADA A TABLA)
     # =====================================================
     def pantalla_lista(self):
         widget = QWidget()
         layout = QVBoxLayout(widget)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        titulo = QLabel("LISTADO GENERAL DE VEHÍCULOS")
+        titulo.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 10px;")
+        layout.addWidget(titulo)
 
         btn = QPushButton("Actualizar Lista")
         btn.clicked.connect(self.listar)
-
-        self.resultado_lista = QTextEdit()
-
         layout.addWidget(btn)
-        layout.addWidget(self.resultado_lista)
 
+        # CREACIÓN DE LA TABLA
+        self.tabla_vehiculos = QTableWidget()
+        self.tabla_vehiculos.setColumnCount(4)
+        self.tabla_vehiculos.setHorizontalHeaderLabels(["Placa", "Marca / Modelo", "Propietario", "Estado"])
+        
+        # Ajuste automático de columnas
+        header = self.tabla_vehiculos.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
+        
+        layout.addWidget(self.tabla_vehiculos)
         self.stack.addWidget(widget)
+
+    def listar(self):
+        lista = vehiculos.listar_vehiculos()
+        self.tabla_vehiculos.setRowCount(0) # Limpiar tabla
+        
+        for v in lista:
+            row = self.tabla_vehiculos.rowCount()
+            self.tabla_vehiculos.insertRow(row)
+            
+            # Insertar datos en celdas
+            self.tabla_vehiculos.setItem(row, 0, QTableWidgetItem(v['placa']))
+            self.tabla_vehiculos.setItem(row, 1, QTableWidgetItem(f"{v['marca']} {v['modelo']}"))
+            self.tabla_vehiculos.setItem(row, 2, QTableWidgetItem(v['propietario']))
+            
+            # Celda de estado con color
+            item_estado = QTableWidgetItem(v['estado'])
+            if v['estado'] == "Activo":
+                item_estado.setForeground(Qt.green)
+            elif v['estado'] == "Reportado":
+                item_estado.setForeground(Qt.red)
+                
+            self.tabla_vehiculos.setItem(row, 3, item_estado)
 
     # ================= FUNCIONES LÓGICAS =================
 
@@ -286,12 +390,6 @@ class VentanaPrincipal(QMainWindow):
         exito, mensaje = vehiculos.cambiar_estado(placa, "Reportado")
         QMessageBox.information(self, "Resultado", mensaje)
 
-    def listar(self):
-        lista = vehiculos.listar_vehiculos()
-        self.resultado_lista.clear()
-        for v in lista:
-            self.resultado_lista.append(f"{v['placa']} | {v['marca']} {v['modelo']} | {v['estado']}")
-
     def registrar_multa(self):
         placa = self.multa_placa.text()
         fecha = self.entry_fecha.text()
@@ -318,7 +416,3 @@ class VentanaPrincipal(QMainWindow):
         self.campos_edicion["placa"].setEnabled(False)
 
         self.stack_editar.setCurrentIndex(1)
-
-        
-    
-
