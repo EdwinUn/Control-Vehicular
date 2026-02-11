@@ -177,7 +177,7 @@ class VentanaPrincipal(QMainWindow):
         titulo.setAlignment(Qt.AlignCenter)
 
         self.input_placa_editar = QLineEdit()
-        self.input_placa_editar.setPlaceholderText("Placa")
+        self.input_placa_editar.setPlaceholderText("El número de placas sin espacios, guiones o caracteres especiales")
 
         btn_buscar_editar = QPushButton("Buscar Vehículo")
         btn_buscar_editar.clicked.connect(self.cargar_datos_editar)
@@ -257,7 +257,7 @@ class VentanaPrincipal(QMainWindow):
         layout.addWidget(titulo)
 
         self.buscar_placa = QLineEdit()
-        self.buscar_placa.setPlaceholderText("Ingresa la placa")
+        self.buscar_placa.setPlaceholderText("El número de placas sin espacios ni símbolos")
 
         btn = QPushButton("Buscar")
         btn.clicked.connect(self.buscar)
@@ -265,27 +265,55 @@ class VentanaPrincipal(QMainWindow):
         layout.addWidget(self.buscar_placa)
         layout.addWidget(btn)
 
-        # 🔥 TABLA DE RESULTADO
-        self.tabla_busqueda = QTableWidget()
-        self.tabla_busqueda.setColumnCount(8)
-        self.tabla_busqueda.setHorizontalHeaderLabels([
-            "Placa", "Marca", "Modelo", "Año",
-            "Color", "Tipo", "Propietario", "Teléfono"
-        ])
+        # ===== CONTENEDOR CON SCROLL =====
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
 
-        # Ajustar columnas
-        header = self.tabla_busqueda.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
+        self.contenido_busqueda = QWidget()
+        self.layout_info = QVBoxLayout(self.contenido_busqueda)
 
-        # 🚫 SOLO LECTURA
-        self.tabla_busqueda.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.tabla_busqueda.setSelectionBehavior(QTableWidget.SelectRows)
+        # ===== DATOS GENERALES (FICHA) =====
+        self.labels_info = {}
+        campos = ["placa", "marca", "modelo", "anio", "color", "tipo", "propietario", "telefono"]
 
-        self.tabla_busqueda.verticalHeader().setVisible(False)
-        layout.addWidget(self.tabla_busqueda)
+        for campo in campos:
+            lbl = QLabel(f"{campo.capitalize()}: ")
+            lbl.setStyleSheet("font-size: 14px; padding:4px;")
+            self.labels_info[campo] = lbl
+            self.layout_info.addWidget(lbl)
+
+        # ===== MULTAS =====
+        titulo_multas = QLabel("MULTAS")
+        titulo_multas.setStyleSheet("font-size:16px; font-weight:bold; margin-top:15px;")
+        self.layout_info.addWidget(titulo_multas)
+
+        self.tabla_multas = QTableWidget()
+        self.tabla_multas.setColumnCount(4)
+        self.tabla_multas.setHorizontalHeaderLabels(["Fecha", "Lugar", "Corralón", "# Multas"])
+        self.tabla_multas.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tabla_multas.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tabla_multas.verticalHeader().setVisible(False)
+
+        self.layout_info.addWidget(self.tabla_multas)
+
+        # ===== HISTORIAL =====
+        titulo_historial = QLabel("HISTORIAL DE CAMBIOS")
+        titulo_historial.setStyleSheet("font-size:16px; font-weight:bold; margin-top:15px;")
+        self.layout_info.addWidget(titulo_historial)
+
+        self.tabla_historial = QTableWidget()
+        self.tabla_historial.setColumnCount(2)
+        self.tabla_historial.setHorizontalHeaderLabels(["Fecha", "Cambio"])
+        self.tabla_historial.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tabla_historial.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tabla_historial.verticalHeader().setVisible(False)
+
+        self.layout_info.addWidget(self.tabla_historial)
+
+        scroll.setWidget(self.contenido_busqueda)
+        layout.addWidget(scroll)
 
         self.stack.addWidget(widget)
-
 
     # =====================================================
     # 🚨 PANTALLA 3 — MULTAS
@@ -343,7 +371,8 @@ class VentanaPrincipal(QMainWindow):
         header = self.tabla_vehiculos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
         
-        self.tabla_vehiculos.veticalHeader()
+        self.tabla_vehiculos.verticalHeader().setVisible(False)
+        
         layout.addWidget(self.tabla_vehiculos)
         self.stack.addWidget(widget)
 
@@ -383,30 +412,41 @@ class VentanaPrincipal(QMainWindow):
         placa = self.buscar_placa.text().strip().upper()
         vehiculo = vehiculos.buscar_por_placa(placa)
 
-        self.tabla_busqueda.setRowCount(0)
-
         if not vehiculo:
             QMessageBox.warning(self, "Error", "Vehículo no encontrado")
             return
 
-        self.tabla_busqueda.insertRow(0)
+        # ===== DATOS GENERALES =====
+        for campo, label in self.labels_info.items():
+            valor = vehiculo.get(campo, "—")
+            label.setText(f"{campo.capitalize()}: {valor}")
 
-        datos = [
-            vehiculo.get("placa", ""),
-            vehiculo.get("marca", ""),
-            vehiculo.get("modelo", ""),
-            vehiculo.get("anio", ""),
-            vehiculo.get("color", ""),
-            vehiculo.get("tipo", ""),
-            vehiculo.get("propietario", ""),
-            vehiculo.get("telefono", "")
-        ]
+        # ===== MULTAS =====
+        multas = vehiculo.get("multas", [])
+        self.tabla_multas.setRowCount(0)
 
-        for col, valor in enumerate(datos):
-            item = QTableWidgetItem(str(valor))
-            item.setTextAlignment(Qt.AlignCenter)
-            self.tabla_busqueda.setItem(0, col, item)
+        for m in multas:
+            row = self.tabla_multas.rowCount()
+            self.tabla_multas.insertRow(row)
+            self.tabla_multas.setItem(row, 0, QTableWidgetItem(str(m.get("fecha",""))))
+            self.tabla_multas.setItem(row, 1, QTableWidgetItem(str(m.get("lugar",""))))
+            self.tabla_multas.setItem(row, 2, QTableWidgetItem(str(m.get("corralon",""))))
+            self.tabla_multas.setItem(row, 3, QTableWidgetItem(str(m.get("numero_multas",""))))
 
+        # ===== HISTORIAL =====
+        historial = vehiculo.get("historial", [])
+        self.tabla_historial.setRowCount(0)
+
+        for h in historial:
+            row = self.tabla_historial.rowCount()
+            self.tabla_historial.insertRow(row)
+
+            if isinstance(h, dict):  # formato nuevo
+                self.tabla_historial.setItem(row, 0, QTableWidgetItem(h.get("fecha", "")))
+                self.tabla_historial.setItem(row, 1, QTableWidgetItem(h.get("cambio", "")))
+            else:  # formato viejo string
+                self.tabla_historial.setItem(row, 0, QTableWidgetItem("—"))
+                self.tabla_historial.setItem(row, 1, QTableWidgetItem(str(h)))
 
     def editar(self):
         placa = self.campos_edicion["placa"].text()

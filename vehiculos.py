@@ -130,8 +130,10 @@ def listar_vehiculos(filtro=None):
 
 def agregar_historial(vehiculo, evento):
     fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
-    vehiculo["historial"].append(f"{fecha} - {evento}")
-
+    vehiculo["historial"].append({
+        "fecha": fecha,
+        "cambio": evento
+    })
 
 # ===============================
 # 🚨 MULTAS
