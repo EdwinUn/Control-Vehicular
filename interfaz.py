@@ -2,9 +2,10 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QFormLayout, QLineEdit, QPushButton, QTextEdit,
     QMessageBox, QStackedWidget, QLabel, QScrollArea,
-    QTableWidget, QTableWidgetItem, QHeaderView  # <--- Nuevos
+    QTableWidget, QTableWidgetItem, QHeaderView, QGridLayout
 )
 from PySide6.QtCore import Qt
+from datetime import datetime
 import vehiculos
 
 class VentanaPrincipal(QMainWindow):
@@ -60,65 +61,108 @@ class VentanaPrincipal(QMainWindow):
         self.btn_multas.clicked.connect(lambda: self.stack.setCurrentIndex(2))
         self.btn_lista.clicked.connect(lambda: self.stack.setCurrentIndex(3))
 
+        self.stack_form.currentChanged.connect(self.reset_scroll_automatico)
+
+    def reset_scroll_automatico(self, index):
+        if hasattr(self, "scroll_registro"):
+            self.scroll_registro.verticalScrollBar().setValue(0)
+        if hasattr(self, "scroll_edicion"):
+            self.scroll_edicion.verticalScrollBar().setValue(0)
 
     #Estilos de la página
     def aplicar_estilos(self):
         self.setStyleSheet("""
-            QMainWindow { background-color: #1e1e1e; }
-            QWidget { color: #d4d4d4; font-family: 'Segoe UI', sans-serif; }
-            
-            /* Menú Lateral */
-            #sidebar { 
-                background-color: #252526; 
-                border-right: 1px solid #333; 
-            }
-            
-            /* Botones del Menú */
-            QPushButton {
-                background-color: #2d2d2d;
-                color: #cccccc;
-                border: 1px solid #3c3c3c;
-                border-radius: 4px;
-                padding: 10px;
-                font-size: 13px;
-            }
-            QPushButton:hover {
-                background-color: #3e3e42;
-                border-color: #007acc;
-                color: white;
-            }
-            QPushButton:pressed {
-                background-color: #007acc;
+            /* ===== FONDO BASE ===== */
+            QWidget {
+                background-color: #1e1e1e;
+                color: #e0e0e0;
+                font-size: 14px;
             }
 
-            /* Inputs */
-            QLineEdit {
-                background-color: #3c3c3c;
-                border: 1px solid #555;
-                border-radius: 3px;
-                padding: 6px;
-                color: white;
-            }
-            QLineEdit:focus {
-                border: 1px solid #007acc;
-            }
-
-            /* Tabla */
-            QTableWidget {
+            /* ===== SIDEBAR ===== */
+            #sidebar {
                 background-color: #252526;
-                gridline-color: #333333;
-                border: 1px solid #333;
-                selection-background-color: #264f78;
-                color: white;
+                border-right: 1px solid #3c3c3c;
             }
+
+            /* ===== ÁREA PRINCIPAL ===== */
+            QStackedWidget, QStackedWidget QWidget {
+                background-color: #2d2d30;
+            }
+
+            /* ===== INPUTS ESTILO LÍNEA ===== */
+            QLineEdit {
+                background: transparent;
+                border: none;
+                border-bottom: 1px solid #555;
+                padding: 8px 4px 4px 4px;
+                font-size: 14px;
+            }
+
+            QLineEdit:focus {
+                border-bottom: 2px solid #5c9ded;
+            }
+
+            QLineEdit::placeholder {
+                color: #888;
+            }
+
+            /* ===== BOTONES ===== */
+            QPushButton {
+                background-color: #3a3a3a;
+                border: 1px solid #444;
+                padding: 8px;
+                border-radius: 5px;
+            }
+
+            QPushButton:hover {
+                background-color: #4a4a4a;
+            }
+
+            /* ===== TABLAS ===== */
+            QTableWidget {
+                background-color: #2b2b2b;
+                gridline-color: #3c3c3c;
+                border: 1px solid #3c3c3c;
+            }
+
+            QTableWidget::item {
+                background-color: #2b2b2b;
+            }
+
             QHeaderView::section {
                 background-color: #333333;
-                color: #cccccc;
-                padding: 8px;
-                border: 1px solid #444;
-                font-weight: bold;
+                border: 1px solid #3c3c3c;
+                padding: 5px;
             }
         """)
+
+    def volver_formulario(self):
+            # 1. Limpiar campos de texto
+            if hasattr(self, "campos_edicion"):
+                for campo in self.campos_edicion.values():
+                    campo.clear()
+                    campo.setEnabled(True) # Re-habilitar la placa por si estaba bloqueada
+
+            if hasattr(self, "campos_registro"):
+                for campo in self.campos_registro.values():
+                    campo.clear()
+
+            # 2. Resetear el sub-stack de edición al paso 1 (Pedir placa)
+            if hasattr(self, "stack_editar"):
+                self.stack_editar.setCurrentIndex(0)
+                self.input_placa_editar.clear() # Limpia la placa que escribiste antes
+
+            # 3. Resetear scrolls (Lo que ya tenías)
+            if hasattr(self, "scroll_edicion"):
+                self.scroll_edicion.verticalScrollBar().setValue(0)
+            if hasattr(self, "scroll_registro"):
+                self.scroll_registro.verticalScrollBar().setValue(0)
+
+            # 4. Regresar al menú de "¿Qué deseas hacer?"
+            self.stack_form.setCurrentIndex(0)
+
+
     # =====================================================
     # 🧾 PANTALLA 1 — REGISTRAR / EDITAR (CORREGIDA)
     # =====================================================
@@ -183,7 +227,7 @@ class VentanaPrincipal(QMainWindow):
         btn_buscar_editar.clicked.connect(self.cargar_datos_editar)
 
         btn_volver_menu = QPushButton(" Volver ")
-        btn_volver_menu.clicked.connect(lambda: self.stack_form.setCurrentIndex(0))
+        btn_volver_menu.clicked.connect(self.volver_formulario)
 
         buscar_layout.addWidget(titulo)
         buscar_layout.addWidget(self.input_placa_editar)
@@ -203,23 +247,75 @@ class VentanaPrincipal(QMainWindow):
         self.stack.addWidget(widget)
 
     def crear_formulario(self, modo):
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
+        contenedor_scroll = QScrollArea()
+        contenedor_scroll.setWidgetResizable(True)
+        contenedor_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        contenedor_form = QWidget()
-        form = QFormLayout(contenedor_form)
+        widget = QWidget()
+        layout_principal = QVBoxLayout(widget)
+        layout_principal.setContentsMargins(80, 30, 80, 30)
+        layout_principal.setSpacing(18)
+
+        # 🔥 CLAVE: que todo empiece arriba e izquierda
+        layout_principal.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+
+                # ===== ENCABEZADO =====
+        titulo = QLabel("Registro de Vehículo" if modo == "registrar" else "Editar Vehículo")
+        titulo.setStyleSheet("""
+            font-size: 26px;
+            font-weight: bold;
+        """)
+        titulo.setAlignment(Qt.AlignLeft)
+
+        subtitulo = QLabel("Completa la información del vehículo")
+        subtitulo.setStyleSheet("font-size: 14px; color: gray;")
+
+        layout_principal.addWidget(titulo)
+        layout_principal.addWidget(subtitulo)
+        layout_principal.addSpacing(15)
 
         campos_local = {}
-        labels = ["placa", "marca", "modelo", "anio", "color", "tipo", "propietario", "telefono"]
 
-        for label in labels:
+        def bloque_input(texto_label):
+            cont = QWidget()
+            cont_layout = QVBoxLayout(cont)
+            cont_layout.setSpacing(6)
+            cont_layout.setAlignment(Qt.AlignLeft)
+
+            label = QLabel(texto_label)
+            label.setStyleSheet("font-weight: bold; font-size:14px;")
+
             entrada = QLineEdit()
-            campos_local[label] = entrada
-            texto_label = "Año" if label == "anio" else label.capitalize()
-            form.addRow(texto_label + ":", entrada)
+            entrada.setMinimumHeight(38)
+            entrada.setMaximumWidth(500)
 
+
+            cont_layout.addWidget(label)
+            cont_layout.addWidget(entrada)
+            return cont, entrada
+
+        campos = [
+            ("Placa", "placa"),
+            ("Marca", "marca"),
+            ("Modelo", "modelo"),
+            ("Año", "anio"),
+            ("Color", "color"),
+            ("Tipo de vehículo", "tipo"),
+            ("Propietario", "propietario"),
+            ("Teléfono", "telefono")
+        ]
+
+        for texto, key in campos:
+            bloque, entrada = bloque_input(texto)
+            layout_principal.addWidget(bloque, alignment=Qt.AlignLeft)
+            campos_local[key] = entrada
+
+        # ===== BOTONES =====
+        layout_principal.addSpacing(10)
 
         btn_accion = QPushButton("Guardar")
+        btn_accion.setMinimumHeight(45)
+        btn_accion.setMaximumWidth(300)
 
         if modo == "registrar":
             self.campos_registro = campos_local
@@ -228,21 +324,26 @@ class VentanaPrincipal(QMainWindow):
             self.campos_edicion = campos_local
             btn_accion.clicked.connect(self.editar)
 
-        btn_volver = QPushButton(" Volver ")
-        btn_volver.clicked.connect(lambda: self.stack_form.setCurrentIndex(0))
+        btn_volver = QPushButton("Volver")
+        btn_volver.setMaximumWidth(300)
+        btn_volver.clicked.connect(self.volver_formulario)
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setWidget(contenedor_form)
+        # 🔥 también alineados a la izquierda
+        layout_principal.addWidget(btn_accion, alignment=Qt.AlignLeft)
+        layout_principal.addWidget(btn_volver, alignment=Qt.AlignLeft)
 
-        layout.addWidget(scroll)
+        layout_principal.addStretch()
 
-        layout.addWidget(btn_accion)
-        layout.addWidget(btn_volver)
-        layout.addSpacing(15)
-        layout.addStretch()
+        contenedor_scroll.setWidget(widget)
+        
+        # guarda referencia para poder manipularlo luego
+        if modo == "registrar":
+            self.scroll_registro = contenedor_scroll
+        else:
+            self.scroll_edicion = contenedor_scroll
 
-        return widget
+        return contenedor_scroll
+
 
     # =====================================================
     # 🔎 PANTALLA 2 — BUSCAR
@@ -271,8 +372,9 @@ class VentanaPrincipal(QMainWindow):
 
         self.contenido_busqueda = QWidget()
         self.layout_info = QVBoxLayout(self.contenido_busqueda)
+        self.layout_info.setSpacing(8)  # 👈 Espacio general entre bloques
 
-        # ===== DATOS GENERALES (FICHA) =====
+        # ===== DATOS GENERALES =====
         self.labels_info = {}
         campos = ["placa", "marca", "modelo", "anio", "color", "tipo", "propietario", "telefono"]
 
@@ -293,12 +395,21 @@ class VentanaPrincipal(QMainWindow):
         self.tabla_multas.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla_multas.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabla_multas.verticalHeader().setVisible(False)
+        self.tabla_multas.setMinimumHeight(130)  # 👈 Evita que se aplaste
 
         self.layout_info.addWidget(self.tabla_multas)
 
+        # 🔥 Separación visual real
+        self.layout_info.addSpacing(20)
+
+        linea = QLabel()
+        linea.setFixedHeight(1)
+        linea.setStyleSheet("background-color:#444; margin-top:10px; margin-bottom:10px;")
+        self.layout_info.addWidget(linea)
+
         # ===== HISTORIAL =====
         titulo_historial = QLabel("HISTORIAL DE CAMBIOS")
-        titulo_historial.setStyleSheet("font-size:16px; font-weight:bold; margin-top:15px;")
+        titulo_historial.setStyleSheet("font-size:16px; font-weight:bold; margin-top:5px;")
         self.layout_info.addWidget(titulo_historial)
 
         self.tabla_historial = QTableWidget()
@@ -307,6 +418,7 @@ class VentanaPrincipal(QMainWindow):
         self.tabla_historial.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla_historial.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabla_historial.verticalHeader().setVisible(False)
+        self.tabla_historial.setMinimumHeight(160)  # 👈 Hace que respire
 
         self.layout_info.addWidget(self.tabla_historial)
 
@@ -315,36 +427,163 @@ class VentanaPrincipal(QMainWindow):
 
         self.stack.addWidget(widget)
 
+
     # =====================================================
     # 🚨 PANTALLA 3 — MULTAS
     # =====================================================
     def pantalla_multas(self):
-        widget = QWidget()
-        layout_principal = QVBoxLayout(widget)
+            widget = QWidget()
+            layout_principal = QVBoxLayout(widget)
+            layout_principal.setContentsMargins(40, 20, 40, 20)
 
-        form = QFormLayout()
-        layout_principal.addLayout(form)
+            # Stack interno para las multas
+            self.stack_multas = QStackedWidget()
+            layout_principal.addWidget(self.stack_multas)
 
-        self.multa_placa = QLineEdit()
-        self.entry_fecha = QLineEdit()
-        self.entry_num_multas = QLineEdit()
-        self.entry_corralon = QLineEdit()
-        self.entry_lugar = QLineEdit()
+            # -----------------------------------------------------
+            # PASO 1: BUSCAR PLACA PARA MULTAR
+            # -----------------------------------------------------
+            buscar_widget = QWidget()
+            buscar_layout = QVBoxLayout(buscar_widget)
+            
+            titulo_b = QLabel("REGISTRAR NUEVA MULTA")
+            titulo_b.setStyleSheet("font-size: 18px; font-weight: bold;")
+            titulo_b.setAlignment(Qt.AlignCenter)
 
-        form.addRow("Placa", self.multa_placa)
-        form.addRow("Fecha", self.entry_fecha)
-        form.addRow("# Multas persona", self.entry_num_multas)
-        form.addRow("¿Corralón?", self.entry_corralon)
-        form.addRow("Lugar", self.entry_lugar)
+            sub_b = QLabel("Ingrese la placa del vehículo a sancionar")
+            sub_b.setAlignment(Qt.AlignCenter)
 
-        btn = QPushButton("Registrar Multa")
-        btn.clicked.connect(self.registrar_multa)
+            self.input_placa_multa = QLineEdit()
+            self.input_placa_multa.setPlaceholderText("Ej: DEF456")
+            self.input_placa_multa.setMaximumWidth(400)
 
-        layout_principal.addWidget(btn)
-        layout_principal.addStretch()
+            btn_validar = QPushButton("Continuar")
+            btn_validar.setMinimumHeight(45)
+            btn_validar.clicked.connect(self.validar_vehiculo_multa)
 
-        self.stack.addWidget(widget)
+            buscar_layout.addStretch()
+            buscar_layout.addWidget(titulo_b)
+            buscar_layout.addWidget(sub_b)
+            buscar_layout.addSpacing(10)
+            buscar_layout.addWidget(self.input_placa_multa, alignment=Qt.AlignCenter)
+            buscar_layout.addWidget(btn_validar, alignment=Qt.AlignCenter)
+            buscar_layout.addStretch()
 
+            self.stack_multas.addWidget(buscar_widget)
+
+            # -----------------------------------------------------
+            # PASO 2: FORMULARIO DE MULTA
+            # -----------------------------------------------------
+            self.form_multa_scroll = self.crear_formulario_multa()
+            self.stack_multas.addWidget(self.form_multa_scroll)
+
+            self.stack.addWidget(widget)
+
+    
+    def crear_formulario_multa(self):
+    
+        # Usamos QScrollArea para mantener consistencia con Registrar/Editar
+            contenedor_scroll = QScrollArea()
+            contenedor_scroll.setWidgetResizable(True)
+            
+            widget = QWidget()
+            layout = QVBoxLayout(widget)
+            layout.setContentsMargins(80, 30, 80, 30)
+            layout.setSpacing(18)
+            layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+
+            titulo = QLabel("Detalles de la Infracción")
+            titulo.setStyleSheet("font-size: 26px; font-weight: bold;")
+            
+            layout.addWidget(titulo)
+            layout.addSpacing(15)
+
+            self.campos_multa = {}
+            campos = [
+                ("Placa del Vehículo", "placa"),
+                ("Fecha (DD/MM/AAAA)", "fecha"),
+                ("Tipo de Infracción", "tipo"),
+                ("Monto ($)", "monto"),
+                ("Lugar de los hechos", "lugar")
+            ]
+
+            for texto, key in campos:
+                # Reutilizamos la lógica visual de bloques que tienes
+                bloque = QWidget()
+                bl_layout = QVBoxLayout(bloque)
+                bl_layout.setSpacing(6)
+                
+                label = QLabel(texto)
+                label.setStyleSheet("font-weight: bold;")
+                
+                entrada = QLineEdit()
+                entrada.setMinimumHeight(38)
+                entrada.setMaximumWidth(500)
+                
+                bl_layout.addWidget(label)
+                bl_layout.addWidget(entrada)
+                layout.addWidget(bloque)
+                
+                self.campos_multa[key] = entrada
+
+            # El campo placa debe ser solo lectura porque ya lo buscamos
+            self.campos_multa["placa"].setReadOnly(True)
+            self.campos_multa["placa"].setStyleSheet("color: #888; border-bottom: 1px solid #333;")
+
+            btn_guardar = QPushButton("Registrar Multa")
+            btn_guardar.setMinimumHeight(45)
+            btn_guardar.setMaximumWidth(300)
+            btn_guardar.clicked.connect(self.procesar_registro_multa)
+
+            btn_cancelar = QPushButton("Cancelar")
+            btn_cancelar.setMaximumWidth(300)
+            btn_cancelar.clicked.connect(lambda: self.stack_multas.setCurrentIndex(0))
+            
+            layout.addWidget(btn_guardar)
+            layout.addWidget(btn_cancelar)
+            layout.addStretch()
+
+            contenedor_scroll.setWidget(widget)
+            return contenedor_scroll
+
+        # --- FUNCIONES LÓGICAS PARA MULTAS ---
+
+    def validar_vehiculo_multa(self):
+            placa = self.input_placa_multa.text().strip().upper()
+            vehiculo = vehiculos.buscar_por_placa(placa)
+
+            if vehiculo:
+                # Llenar el campo placa automáticamente
+                self.campos_multa["placa"].setText(placa)
+                # Poner fecha actual por defecto
+                self.campos_multa["fecha"].setText(datetime.now().strftime("%d/%m/%Y"))
+                
+                self.stack_multas.setCurrentIndex(1)
+                self.form_multa_scroll.verticalScrollBar().setValue(0) # Reset scroll
+            else:
+                QMessageBox.warning(self, "No encontrado", "No existe un vehículo con esa placa.")
+
+    def procesar_registro_multa(self):
+            placa = self.campos_multa["placa"].text()
+            fecha = self.campos_multa["fecha"].text()
+            tipo = self.campos_multa["tipo"].text()
+            monto = self.campos_multa["monto"].text()
+            lugar = self.campos_multa["lugar"].text()
+
+            if not all([fecha, tipo, monto, lugar]):
+                QMessageBox.warning(self, "Campos incompletos", "Por favor llena todos los datos.")
+                return
+
+            exito, mensaje = vehiculos.agregar_multa(placa, fecha, tipo, monto, lugar)
+            
+            if exito:
+                QMessageBox.information(self, "Éxito", mensaje)
+                # Limpiar y volver
+                for c in self.campos_multa.values(): c.clear()
+                self.input_placa_multa.clear()
+                self.stack_multas.setCurrentIndex(0)
+            else:
+                QMessageBox.critical(self, "Error", mensaje)
 
     # =====================================================
     # 📄 PANTALLA 4 — LISTA (ACTUALIZADA A TABLA)
@@ -421,18 +660,22 @@ class VentanaPrincipal(QMainWindow):
             valor = vehiculo.get(campo, "—")
             label.setText(f"{campo.capitalize()}: {valor}")
 
-        # ===== MULTAS =====
+        # ===== MULTAS EN PANTALLA DE BÚSQUEDA =====
         multas = vehiculo.get("multas", [])
         self.tabla_multas.setRowCount(0)
+
+        # Actualizamos cabeceras de la tabla para que coincidan con los nuevos datos
+        self.tabla_multas.setHorizontalHeaderLabels(["Fecha", "Tipo", "Monto", "Lugar"])
 
         for m in multas:
             row = self.tabla_multas.rowCount()
             self.tabla_multas.insertRow(row)
+            
+            # Extraemos los datos usando las nuevas llaves del JSON
             self.tabla_multas.setItem(row, 0, QTableWidgetItem(str(m.get("fecha",""))))
-            self.tabla_multas.setItem(row, 1, QTableWidgetItem(str(m.get("lugar",""))))
-            self.tabla_multas.setItem(row, 2, QTableWidgetItem(str(m.get("corralon",""))))
-            self.tabla_multas.setItem(row, 3, QTableWidgetItem(str(m.get("numero_multas",""))))
-
+            self.tabla_multas.setItem(row, 1, QTableWidgetItem(str(m.get("tipo_infraccion",""))))
+            self.tabla_multas.setItem(row, 2, QTableWidgetItem(f"$ {m.get('monto','0')}"))
+            self.tabla_multas.setItem(row, 3, QTableWidgetItem(str(m.get("lugar",""))))
         # ===== HISTORIAL =====
         historial = vehiculo.get("historial", [])
         self.tabla_historial.setRowCount(0)

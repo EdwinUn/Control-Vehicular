@@ -10,16 +10,27 @@
         "telefono": "999222333",
         "estado": "Activo",
         "historial": [
-            "09/02/2026 10:15 - Se registró una multa",
-            "11/02/2026 07:06 - Datos del vehículo modificados",
-            "11/02/2026 11:57 - Datos del vehículo modificados"
+            {
+                "fecha": "09/02/2026 10:15",
+                "cambio": "Se registró una multa"
+            },
+            {
+                "fecha": "11/02/2026 16:26",
+                "cambio": "Multa registrada: Exceso de velocidad por $2300"
+            }
         ],
         "multas": [
             {
                 "fecha": "09/02/2026",
-                "numero_multas": "1",
-                "corralon": "No",
+                "tipo_infraccion": "Mal estacionado",
+                "monto": "800",
                 "lugar": "Av. Reforma"
+            },
+            {
+                "fecha": "11/02/2026",
+                "tipo_infraccion": "Exceso de velocidad",
+                "monto": "2300",
+                "lugar": "Mérida"
             }
         ]
     },
@@ -34,8 +45,50 @@
         "telefono": "999333444",
         "estado": "Reportado",
         "historial": [
-            "08/02/2026 12:00 - Estado cambiado a Reportado"
+            {
+                "fecha": "08/02/2026 12:00",
+                "cambio": "Estado cambiado a Reportado"
+            }
         ],
         "multas": []
+    },
+    {
+        "placa": "ABC123",
+        "marca": "Ford",
+        "modelo": "Ranger",
+        "anio": "2022",
+        "color": "Blanco",
+        "tipo": "Camioneta",
+        "propietario": "Ana Martínez",
+        "telefono": "999111222",
+        "estado": "Activo",
+        "historial": [
+            {
+                "fecha": "10/02/2026 09:30",
+                "cambio": "Vehículo registrado correctamente."
+            },
+            {
+                "fecha": "11/02/2026 14:10",
+                "cambio": "Multa registrada: Semáforo en rojo por $1500"
+            },
+            {
+                "fecha": "11/02/2026 16:28",
+                "cambio": "Multa registrada: Exceso de chile por $40000"
+            }
+        ],
+        "multas": [
+            {
+                "fecha": "11/02/2026",
+                "tipo_infraccion": "Semáforo en rojo",
+                "monto": "1500",
+                "lugar": "Calle 60 Centro"
+            },
+            {
+                "fecha": "11/02/2026",
+                "tipo_infraccion": "Exceso de chile",
+                "monto": "40000",
+                "lugar": "garcia gineres"
+            }
+        ]
     }
 ]

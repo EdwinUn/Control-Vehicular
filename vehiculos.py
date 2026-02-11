@@ -12,19 +12,40 @@ ARCHIVO_DATOS = os.path.join(BASE_DIR, "datos.json")
 def cargar_datos():
     if not os.path.exists(ARCHIVO_DATOS):
         return []
+
     try:
         with open(ARCHIVO_DATOS, "r", encoding="utf-8") as archivo:
             vehiculos = json.load(archivo)
 
-            for v in vehiculos:
-                if "multas" not in v:
-                    v["multas"] = []
-                if "historial" not in v:
-                    v["historial"] = []
+        # NORMALIZAR ESTRUCTURA
+        for v in vehiculos:
+            if "multas" not in v:
+                v["multas"] = []
+            if "historial" not in v:
+                v["historial"] = []
 
-            return vehiculos
+            # CONVERTIR HISTORIAL VIEJO → NUEVO FORMATO
+            nuevo_historial = []
+            for h in v["historial"]:
+                if isinstance(h, str):
+                    if " - " in h:
+                        fecha, cambio = h.split(" - ", 1)
+                        nuevo_historial.append({"fecha": fecha, "cambio": cambio})
+                    else:
+                        nuevo_historial.append({"fecha": "", "cambio": h})
+                else:
+                    nuevo_historial.append(h)
+
+            v["historial"] = nuevo_historial
+
+        # Guardar solo si hubo estructura vieja
+        guardar_datos(vehiculos)
+
+        return vehiculos
+
     except:
         return []
+
 
 
 def guardar_datos(lista_vehiculos):
@@ -139,25 +160,26 @@ def agregar_historial(vehiculo, evento):
 # 🚨 MULTAS
 # ===============================
 
-def agregar_multa(placa, fecha, numero_multas, corralon, lugar):
+def agregar_multa(placa, fecha, tipo, monto, lugar):
     vehiculos = cargar_datos()
 
     for v in vehiculos:
         if v["placa"] == placa:
+            # Creamos el diccionario con los nuevos campos
             multa = {
                 "fecha": fecha,
-                "numero_multas": numero_multas,
-                "corralon": corralon,
+                "tipo_infraccion": tipo, 
+                "monto": monto,           
                 "lugar": lugar
             }
 
             v["multas"].append(multa)
-            agregar_historial(v, "Se registró una multa")
+            # Actualizamos el historial con un mensaje más detallado
+            agregar_historial(v, f"Multa registrada: {tipo} por ${monto}")
             guardar_datos(vehiculos)
-            return True, "Multa agregada."
+            return True, "Multa agregada correctamente."
 
     return False, "Vehículo no encontrado."
-
 
 def contar_multas(placa):
     vehiculos = cargar_datos()
