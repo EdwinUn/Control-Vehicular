@@ -376,12 +376,23 @@ class VentanaPrincipal(QMainWindow):
 
         # ===== DATOS GENERALES =====
         self.labels_info = {}
-        campos = ["placa", "marca", "modelo", "anio", "color", "tipo", "propietario", "telefono"]
+        # La clave sigue siendo "anio" para el backend, 
+        # pero el texto del Label será "Año"
+        campos = [
+            ("placa", "Placa"),
+            ("marca", "Marca"),
+            ("modelo", "Modelo"),
+            ("anio", "Año"),
+            ("color", "Color"),
+            ("tipo", "Tipo"),
+            ("propietario", "Propietario"),
+            ("telefono", "Teléfono")
+        ]
 
-        for campo in campos:
-            lbl = QLabel(f"{campo.capitalize()}: ")
+        for clave_json, texto_visual in campos:
+            lbl = QLabel(f"{texto_visual}: ")
             lbl.setStyleSheet("font-size: 14px; padding:4px;")
-            self.labels_info[campo] = lbl
+            self.labels_info[clave_json] = lbl # Guardamos la referencia con la clave del JSON
             self.layout_info.addWidget(lbl)
 
         # ===== MULTAS =====
@@ -648,49 +659,20 @@ class VentanaPrincipal(QMainWindow):
 
 
     def buscar(self):
-        placa = self.buscar_placa.text().strip().upper()
-        vehiculo = vehiculos.buscar_por_placa(placa)
+            placa = self.buscar_placa.text().strip().upper()
+            vehiculo = vehiculos.buscar_por_placa(placa)
 
-        if not vehiculo:
-            QMessageBox.warning(self, "Error", "Vehículo no encontrado")
-            return
+            if not vehiculo:
+                QMessageBox.warning(self, "Error", "Vehículo no encontrado")
+                return
 
-        # ===== DATOS GENERALES =====
-        for campo, label in self.labels_info.items():
-            valor = vehiculo.get(campo, "—")
-            label.setText(f"{campo.capitalize()}: {valor}")
-
-        # ===== MULTAS EN PANTALLA DE BÚSQUEDA =====
-        multas = vehiculo.get("multas", [])
-        self.tabla_multas.setRowCount(0)
-
-        # Actualizamos cabeceras de la tabla para que coincidan con los nuevos datos
-        self.tabla_multas.setHorizontalHeaderLabels(["Fecha", "Tipo", "Monto", "Lugar"])
-
-        for m in multas:
-            row = self.tabla_multas.rowCount()
-            self.tabla_multas.insertRow(row)
+            # Llenamos los labels usando las claves del JSON
+            for clave, label in self.labels_info.items():
+                valor = vehiculo.get(clave, "—")
+                # Recuperamos el prefijo (ej: "Año") para no perderlo al actualizar el texto
+                texto_base = label.text().split(":")[0] 
+                label.setText(f"{texto_base}: {valor}")
             
-            # Extraemos los datos usando las nuevas llaves del JSON
-            self.tabla_multas.setItem(row, 0, QTableWidgetItem(str(m.get("fecha",""))))
-            self.tabla_multas.setItem(row, 1, QTableWidgetItem(str(m.get("tipo_infraccion",""))))
-            self.tabla_multas.setItem(row, 2, QTableWidgetItem(f"$ {m.get('monto','0')}"))
-            self.tabla_multas.setItem(row, 3, QTableWidgetItem(str(m.get("lugar",""))))
-        # ===== HISTORIAL =====
-        historial = vehiculo.get("historial", [])
-        self.tabla_historial.setRowCount(0)
-
-        for h in historial:
-            row = self.tabla_historial.rowCount()
-            self.tabla_historial.insertRow(row)
-
-            if isinstance(h, dict):  # formato nuevo
-                self.tabla_historial.setItem(row, 0, QTableWidgetItem(h.get("fecha", "")))
-                self.tabla_historial.setItem(row, 1, QTableWidgetItem(h.get("cambio", "")))
-            else:  # formato viejo string
-                self.tabla_historial.setItem(row, 0, QTableWidgetItem("—"))
-                self.tabla_historial.setItem(row, 1, QTableWidgetItem(str(h)))
-
     def editar(self):
         placa = self.campos_edicion["placa"].text()
         nuevos = {k: v.text() for k, v in self.campos_edicion.items() if k != "placa"}

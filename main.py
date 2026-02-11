@@ -1,8 +1,7 @@
 
 """
 TODO
--Arreglar menú de multas
--Arreglar colores de registrar y buscar vehículo
+
 """
 
 import sys
