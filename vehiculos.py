@@ -6,7 +6,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_DATOS = os.path.join(BASE_DIR, "datos.json")
 
 # ===============================
-# 📂 MANEJO DE ARCHIVO
+#  MANEJO DE ARCHIVO
 # ===============================
 
 def cargar_datos():
@@ -54,7 +54,7 @@ def guardar_datos(lista_vehiculos):
 
 
 # ===============================
-# 🚗 REGISTRAR VEHÍCULO
+#  REGISTRAR VEHÍCULO
 # ===============================
 
 def registrar_vehiculo(datos):
@@ -81,7 +81,7 @@ def registrar_vehiculo(datos):
 
 
 # ===============================
-# 🔍 BUSCAR VEHÍCULO
+#  BUSCAR VEHÍCULO
 # ===============================
 
 def buscar_por_placa(placa):
@@ -96,7 +96,7 @@ def buscar_por_placa(placa):
 
 
 # ===============================
-# ✏️ EDITAR VEHÍCULO
+#  EDITAR VEHÍCULO
 # ===============================
 
 def editar_vehiculo(placa, nuevos_datos):
@@ -116,7 +116,7 @@ def editar_vehiculo(placa, nuevos_datos):
 
 
 # ===============================
-# 🔄 CAMBIAR ESTADO
+#  CAMBIAR ESTADO
 # ===============================
 
 def cambiar_estado(placa, nuevo_estado):
@@ -133,7 +133,7 @@ def cambiar_estado(placa, nuevo_estado):
 
 
 # ===============================
-# 📋 LISTAR VEHÍCULOS
+#  LISTAR VEHÍCULOS
 # ===============================
 
 def listar_vehiculos(filtro=None):
@@ -146,7 +146,7 @@ def listar_vehiculos(filtro=None):
 
 
 # ===============================
-# 🧾 HISTORIAL
+#  HISTORIAL
 # ===============================
 
 def agregar_historial(vehiculo, evento):
@@ -157,7 +157,7 @@ def agregar_historial(vehiculo, evento):
     })
 
 # ===============================
-# 🚨 MULTAS
+#  MULTAS
 # ===============================
 
 def agregar_multa(placa, fecha, tipo, monto, lugar):

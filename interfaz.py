@@ -151,9 +151,8 @@ class VentanaPrincipal(QMainWindow):
             # 2. Resetear el sub-stack de edición al paso 1 (Pedir placa)
             if hasattr(self, "stack_editar"):
                 self.stack_editar.setCurrentIndex(0)
-                self.input_placa_editar.clear() # Limpia la placa que escribiste antes
-
-            # 3. Resetear scrolls (Lo que ya tenías)
+                self.input_placa_editar.clear()
+            # 3. Resetear scrolls 
             if hasattr(self, "scroll_edicion"):
                 self.scroll_edicion.verticalScrollBar().setValue(0)
             if hasattr(self, "scroll_registro"):
@@ -164,19 +163,19 @@ class VentanaPrincipal(QMainWindow):
 
 
     # =====================================================
-    # 🧾 PANTALLA 1 — REGISTRAR / EDITAR (CORREGIDA)
+    #  PANTALLA 1 — REGISTRAR / EDITAR (CORREGIDA)
     # =====================================================
     def pantalla_formulario(self):
         widget = QWidget()
         layout_principal = QVBoxLayout(widget)
         layout_principal.setContentsMargins(40, 20, 40, 20)
 
-        # ✅ SOLO UN STACK
+        #  SOLO UN STACK
         self.stack_form = QStackedWidget()
         layout_principal.addWidget(self.stack_form)
 
         # =====================================================
-        # 🟦 PANTALLA A — MENÚ DE OPCIONES
+        #  PANTALLA A — MENÚ DE OPCIONES
         # =====================================================
         menu_widget = QWidget()
         menu_layout = QVBoxLayout(menu_widget)
@@ -200,13 +199,13 @@ class VentanaPrincipal(QMainWindow):
         menu_layout.addWidget(btn_ir_editar)
         menu_layout.addStretch()
 
-        # 🔥 ESTE FALTABA
+  
         self.stack_form.addWidget(menu_widget)
 
-        # 🟩 REGISTRAR
+        #  REGISTRAR
         self.stack_form.addWidget(self.crear_formulario(modo="registrar"))
 
-        # 🟨 EDITAR
+        #  EDITAR
         editar_widget = QWidget()
         editar_layout = QVBoxLayout(editar_widget)
 
@@ -243,7 +242,6 @@ class VentanaPrincipal(QMainWindow):
 
         self.stack_form.addWidget(editar_widget)
 
-        # 👉 AGREGAR ESTA PANTALLA AL STACK PRINCIPAL
         self.stack.addWidget(widget)
 
     def crear_formulario(self, modo):
@@ -256,7 +254,7 @@ class VentanaPrincipal(QMainWindow):
         layout_principal.setContentsMargins(80, 30, 80, 30)
         layout_principal.setSpacing(18)
 
-        # 🔥 CLAVE: que todo empiece arriba e izquierda
+        #  CLAVE: que todo empiece arriba e izquierda
         layout_principal.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
                 # ===== ENCABEZADO =====
@@ -328,7 +326,6 @@ class VentanaPrincipal(QMainWindow):
         btn_volver.setMaximumWidth(300)
         btn_volver.clicked.connect(self.volver_formulario)
 
-        # 🔥 también alineados a la izquierda
         layout_principal.addWidget(btn_accion, alignment=Qt.AlignLeft)
         layout_principal.addWidget(btn_volver, alignment=Qt.AlignLeft)
 
@@ -336,7 +333,6 @@ class VentanaPrincipal(QMainWindow):
 
         contenedor_scroll.setWidget(widget)
         
-        # guarda referencia para poder manipularlo luego
         if modo == "registrar":
             self.scroll_registro = contenedor_scroll
         else:
@@ -346,7 +342,7 @@ class VentanaPrincipal(QMainWindow):
 
 
     # =====================================================
-    # 🔎 PANTALLA 2 — BUSCAR
+    #  PANTALLA 2 — BUSCAR
     # =====================================================
     def pantalla_buscar(self):
         widget = QWidget()
@@ -372,12 +368,10 @@ class VentanaPrincipal(QMainWindow):
 
         self.contenido_busqueda = QWidget()
         self.layout_info = QVBoxLayout(self.contenido_busqueda)
-        self.layout_info.setSpacing(8)  # 👈 Espacio general entre bloques
+        self.layout_info.setSpacing(8)  #  Espacio general entre bloques
 
         # ===== DATOS GENERALES =====
         self.labels_info = {}
-        # La clave sigue siendo "anio" para el backend, 
-        # pero el texto del Label será "Año"
         campos = [
             ("placa", "Placa"),
             ("marca", "Marca"),
@@ -393,7 +387,7 @@ class VentanaPrincipal(QMainWindow):
         for clave_json, texto_visual in campos:
             lbl = QLabel(f"{texto_visual}: ")
             lbl.setStyleSheet("font-size: 14px; padding:4px;")
-            self.labels_info[clave_json] = lbl # Guardamos la referencia con la clave del JSON
+            self.labels_info[clave_json] = lbl
             self.layout_info.addWidget(lbl)
 
         # ===== MULTAS =====
@@ -407,11 +401,9 @@ class VentanaPrincipal(QMainWindow):
         self.tabla_multas.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla_multas.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabla_multas.verticalHeader().setVisible(False)
-        self.tabla_multas.setMinimumHeight(130)  # 👈 Evita que se aplaste
+        self.tabla_multas.setMinimumHeight(130) 
 
         self.layout_info.addWidget(self.tabla_multas)
-
-        # 🔥 Separación visual real
         self.layout_info.addSpacing(20)
 
         linea = QLabel()
@@ -430,7 +422,7 @@ class VentanaPrincipal(QMainWindow):
         self.tabla_historial.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla_historial.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabla_historial.verticalHeader().setVisible(False)
-        self.tabla_historial.setMinimumHeight(160)  # 👈 Hace que respire
+        self.tabla_historial.setMinimumHeight(160) 
 
         self.layout_info.addWidget(self.tabla_historial)
         
@@ -457,7 +449,7 @@ class VentanaPrincipal(QMainWindow):
 
 
     # =====================================================
-    # 🚨 PANTALLA 3 — MULTAS
+    #  PANTALLA 3 — MULTAS
     # =====================================================
     def pantalla_multas(self):
             widget = QWidget()
@@ -536,7 +528,7 @@ class VentanaPrincipal(QMainWindow):
             ]
 
             for texto, key in campos:
-                # Reutilizamos la lógica visual de bloques que tienes
+ 
                 bloque = QWidget()
                 bl_layout = QVBoxLayout(bloque)
                 bl_layout.setSpacing(6)
@@ -554,7 +546,6 @@ class VentanaPrincipal(QMainWindow):
                 
                 self.campos_multa[key] = entrada
 
-            # El campo placa debe ser solo lectura porque ya lo buscamos
             self.campos_multa["placa"].setReadOnly(True)
             self.campos_multa["placa"].setStyleSheet("color: #888; border-bottom: 1px solid #333;")
 
@@ -614,7 +605,7 @@ class VentanaPrincipal(QMainWindow):
                 QMessageBox.critical(self, "Error", mensaje)
 
     # =====================================================
-    # 📄 PANTALLA 4 — LISTA (ACTUALIZADA A TABLA)
+    #  PANTALLA 4 — LISTA 
     # =====================================================
     def pantalla_lista(self):
         widget = QWidget()
@@ -697,7 +688,6 @@ class VentanaPrincipal(QMainWindow):
                 row = self.tabla_multas.rowCount()
                 self.tabla_multas.insertRow(row)
                 
-                # Aseguramos que existan las claves, si no, pone string vacío
                 fecha = m.get("fecha", "")
                 tipo = m.get("tipo_infraccion", "")
                 monto = f"${m.get('monto', '0')}"
@@ -712,17 +702,17 @@ class VentanaPrincipal(QMainWindow):
             self.tabla_historial.setRowCount(0) # Limpiar tabla anterior
             lista_historial = vehiculo.get("historial", [])
             
-            # Invertimos la lista para ver lo más reciente arriba (opcional, pero recomendado)
+ 
             for h in reversed(lista_historial):
                 row = self.tabla_historial.rowCount()
                 self.tabla_historial.insertRow(row)
 
-                # Tu backend ya normaliza esto, así que siempre debería ser diccionario
+
                 if isinstance(h, dict):
                     fecha = h.get("fecha", "")
                     cambio = h.get("cambio", "")
                 else:
-                    # Fallback por si acaso queda algún string viejo
+
                     fecha = "—"
                     cambio = str(h)
 
@@ -731,18 +721,18 @@ class VentanaPrincipal(QMainWindow):
                 
             # 4. Configurar botón de estado
             estado_actual = vehiculo.get("estado", "Activo")
-            self.btn_estado.setVisible(True) # Mostrar el botón ahora que hay datos
+            self.btn_estado.setVisible(True)
             
             if estado_actual == "Activo":
                 self.btn_estado.setText("Marcar como REPORTADO")
                 self.btn_estado.setStyleSheet("background-color: #a81c1c; color: white; font-weight: bold; padding: 10px;")
-                self.btn_estado.setProperty("accion", "reportar") # Usamos propiedad dinámica
+                self.btn_estado.setProperty("accion", "reportar")
             else:
                 self.btn_estado.setText("Reactivar Vehículo")
                 self.btn_estado.setStyleSheet("background-color: #2e7d32; color: white; font-weight: bold; padding: 10px;")
                 self.btn_estado.setProperty("accion", "activar")
 
-        # Nueva función para manejar el click
+
     def accion_cambiar_estado(self):
             placa = self.buscar_placa.text().strip().upper()
             accion = self.btn_estado.property("accion")
@@ -763,7 +753,8 @@ class VentanaPrincipal(QMainWindow):
             else: # activar
                 vehiculos.cambiar_estado(placa, "Activo")
                 self.buscar() # Recargar datos
-                QMessageBox.information(self, "Éxito", "Vehículo marcado como ACTIVO nuevamente.")   
+                QMessageBox.information(self, "Éxito", "Vehículo marcado como ACTIVO nuevamente.")
+                   
     def editar(self):
         placa = self.campos_edicion["placa"].text()
         nuevos = {k: v.text() for k, v in self.campos_edicion.items() if k != "placa"}
