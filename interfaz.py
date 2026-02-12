@@ -1,3 +1,14 @@
+"""
+Módulo de Interfaz Gráfica (Frontend).
+
+Este archivo contiene la lógica de presentación utilizando PySide6.
+Su responsabilidad es:
+1. Construir las ventanas y formularios.
+2. Capturar la interacción del usuario.
+3. Llamar a las funciones del módulo 'vehiculos.py' (Backend).
+4. Mostrar los resultados o alertas correspondientes.
+"""
+
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QFormLayout, QLineEdit, QPushButton, QTextEdit,
@@ -9,7 +20,23 @@ from datetime import datetime
 import vehiculos
 
 class VentanaPrincipal(QMainWindow):
+    """
+    Clase principal que gestiona la ventana de la aplicación.
+    
+    Utiliza un QStackedWidget para manejar la navegación entre las diferentes
+    secciones (Registrar, Buscar, Multas, Lista) sin abrir múltiples ventanas,
+    simulando una experiencia de 'Single Page Application'.
+    """
     def __init__(self):
+        """
+        Inicializa la interfaz gráfica.
+        
+        Configura:
+        - Propiedades de la ventana (tamaño, título).
+        - El menú lateral (Sidebar) y sus botones.
+        - El QStackedWidget (contenedor de páginas).
+        - Las conexiones de señales y slots (eventos de clic).
+        """
         super().__init__()
         self.setWindowTitle("Sistema de Control Vehicular")
         self.setGeometry(200, 50, 1000, 650)
@@ -138,6 +165,7 @@ class VentanaPrincipal(QMainWindow):
         """)
 
     def volver_formulario(self):
+            """Limpia los campos de texto y resetea la navegación a la pantalla inicial."""
             # 1. Limpiar campos de texto
             if hasattr(self, "campos_edicion"):
                 for campo in self.campos_edicion.values():
@@ -166,6 +194,8 @@ class VentanaPrincipal(QMainWindow):
     #  PANTALLA 1 — REGISTRAR / EDITAR (CORREGIDA)
     # =====================================================
     def pantalla_formulario(self):
+        """Configura la vista de Registro y Edición con su sub-navegación interna."""
+        
         widget = QWidget()
         layout_principal = QVBoxLayout(widget)
         layout_principal.setContentsMargins(40, 20, 40, 20)
@@ -345,6 +375,7 @@ class VentanaPrincipal(QMainWindow):
     #  PANTALLA 2 — BUSCAR
     # =====================================================
     def pantalla_buscar(self):
+        """Configura la vista de Búsqueda, incluyendo labels de info y tablas de multas/historial."""
         widget = QWidget()
         layout = QVBoxLayout(widget)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -452,6 +483,7 @@ class VentanaPrincipal(QMainWindow):
     #  PANTALLA 3 — MULTAS
     # =====================================================
     def pantalla_multas(self):
+        #Configura el flujo de Multas: primero validación de placa, luego formulario de infracción.
             widget = QWidget()
             layout_principal = QVBoxLayout(widget)
             layout_principal.setContentsMargins(40, 20, 40, 20)
@@ -583,6 +615,10 @@ class VentanaPrincipal(QMainWindow):
                 QMessageBox.warning(self, "No encontrado", "No existe un vehículo con esa placa.")
 
     def procesar_registro_multa(self):
+            """
+            Valida que el formulario de multas esté completo y envía los datos
+            al backend para registrar la infracción y actualizar el historial.
+            """
             placa = self.campos_multa["placa"].text()
             fecha = self.campos_multa["fecha"].text()
             tipo = self.campos_multa["tipo"].text()
@@ -608,6 +644,7 @@ class VentanaPrincipal(QMainWindow):
     #  PANTALLA 4 — LISTA 
     # =====================================================
     def pantalla_lista(self):
+        """Configura la vista de tabla general para visualizar todo el inventario de vehículos."""
         widget = QWidget()
         layout = QVBoxLayout(widget)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -635,6 +672,10 @@ class VentanaPrincipal(QMainWindow):
         self.stack.addWidget(widget)
 
     def listar(self):
+        """
+        Solicita la lista completa de vehículos y regenera las filas de la tabla principal.
+        Aplica formato condicional (colores) a la columna de Estado.
+        """    
         lista = vehiculos.listar_vehiculos()
         self.tabla_vehiculos.setRowCount(0) # Limpiar tabla
         
@@ -659,6 +700,10 @@ class VentanaPrincipal(QMainWindow):
     # ================= FUNCIONES LÓGICAS =================
 
     def registrar(self):
+        """
+        Recopila los datos de los inputs de registro.
+        Llama al backend para guardar el nuevo vehículo y notifica el resultado.
+        """
         datos = {k: v.text() for k, v in self.campos_registro.items()}
         datos["placa"] = datos["placa"].upper()
 
@@ -667,6 +712,16 @@ class VentanaPrincipal(QMainWindow):
 
 
     def buscar(self):
+            """
+            Ejecuta la búsqueda de un vehículo por placa.
+            
+            Pasos:
+            1. Consulta al backend.
+            2. Si existe, rellena los labels de información.
+            3. Limpia y rellena la tabla de Multas.
+            4. Limpia y rellena la tabla de Historial.
+            5. Actualiza el estado y color del botón de acción (Reportar/Activar).
+            """
             placa = self.buscar_placa.text().strip().upper()
             vehiculo = vehiculos.buscar_por_placa(placa)
 
@@ -734,6 +789,10 @@ class VentanaPrincipal(QMainWindow):
 
 
     def accion_cambiar_estado(self):
+            """
+            Maneja la lógica del botón dinámico en la pantalla de búsqueda.
+            Alterna el estado del vehículo entre 'Activo' y 'Reportado' previa confirmación.
+            """
             placa = self.buscar_placa.text().strip().upper()
             accion = self.btn_estado.property("accion")
             
