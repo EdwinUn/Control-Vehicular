@@ -99,69 +99,63 @@ class VentanaPrincipal(QMainWindow):
     #Estilos de la página
     def aplicar_estilos(self):
         self.setStyleSheet("""
-            /* ===== FONDO BASE ===== */
-            QWidget {
-                background-color: #1e1e1e;
-                color: #e0e0e0;
-                font-size: 14px;
-            }
+/* ===== FONDO BASE ===== */
+QWidget {
+    background-color: #1b2631; /* Azul muy oscuro */
+    color: #ecf0f1;
+    font-size: 14px;
+}
 
-            /* ===== SIDEBAR ===== */
-            #sidebar {
-                background-color: #252526;
-                border-right: 1px solid #3c3c3c;
-            }
+/* ===== SIDEBAR ===== */
+#sidebar {
+    background-color: #17202a;
+    border-right: 1px solid #2c3e50;
+}
 
-            /* ===== ÁREA PRINCIPAL ===== */
-            QStackedWidget, QStackedWidget QWidget {
-                background-color: #2d2d30;
-            }
+/* ===== ÁREA PRINCIPAL ===== */
+QStackedWidget, QStackedWidget QWidget {
+    background-color: #212f3c; /* Azul grisáceo */
+}
 
-            /* ===== INPUTS ESTILO LÍNEA ===== */
-            QLineEdit {
-                background: transparent;
-                border: none;
-                border-bottom: 1px solid #555;
-                padding: 8px 4px 4px 4px;
-                font-size: 14px;
-            }
+/* ===== INPUTS ===== */
+QLineEdit {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #5d6d7e;
+    padding: 6px;
+    color: #fff;
+}
 
-            QLineEdit:focus {
-                border-bottom: 2px solid #5c9ded;
-            }
+QLineEdit:focus {
+    border-bottom: 2px solid #3498db; /* Azul brillante */
+}
 
-            QLineEdit::placeholder {
-                color: #888;
-            }
+/* ===== BOTONES ===== */
+QPushButton {
+    background-color: #283747;
+    border: 1px solid #566573;
+    padding: 8px;
+    border-radius: 4px;
+    color: #fff;
+}
 
-            /* ===== BOTONES ===== */
-            QPushButton {
-                background-color: #3a3a3a;
-                border: 1px solid #444;
-                padding: 8px;
-                border-radius: 5px;
-            }
+QPushButton:hover {
+    background-color: #34495e;
+    border-color: #3498db;
+}
 
-            QPushButton:hover {
-                background-color: #4a4a4a;
-            }
+/* ===== TABLAS ===== */
+QTableWidget {
+    background-color: #1b2631;
+    gridline-color: #2c3e50;
+    border: 1px solid #2c3e50;
+}
 
-            /* ===== TABLAS ===== */
-            QTableWidget {
-                background-color: #2b2b2b;
-                gridline-color: #3c3c3c;
-                border: 1px solid #3c3c3c;
-            }
-
-            QTableWidget::item {
-                background-color: #2b2b2b;
-            }
-
-            QHeaderView::section {
-                background-color: #333333;
-                border: 1px solid #3c3c3c;
-                padding: 5px;
-            }
+QHeaderView::section {
+    background-color: #2c3e50;
+    border: 1px solid #17202a;
+    padding: 5px;
+}
         """)
 
     def volver_formulario(self):
