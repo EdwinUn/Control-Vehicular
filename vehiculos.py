@@ -1,3 +1,15 @@
+"""
+Módulo de Lógica de Negocio y Persistencia de Datos.
+
+Este archivo actúa como el backend de la aplicación. Se encarga de:
+1. Gestionar la persistencia de datos en un archivo JSON local (datos.json).
+2. Realizar validaciones de negocio (ej. unicidad de placas).
+3. Proveer funciones CRUD (Crear, Leer, Actualizar, Borrar -aunque no borramos, cambiamos estado-).
+4. Administrar el historial de cambios y el registro de multas.
+
+No contiene código de interfaz gráfica (PySide6)
+"""
+
 import json
 import os
 from datetime import datetime
