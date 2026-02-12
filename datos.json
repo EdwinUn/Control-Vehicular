@@ -8,7 +8,7 @@
         "tipo": "Auto",
         "propietario": "Luis Gómez",
         "telefono": "999222333",
-        "estado": "Reportado",
+        "estado": "Activo",
         "historial": [
             {
                 "fecha": "09/02/2026 10:15",
@@ -21,6 +21,10 @@
             {
                 "fecha": "12/02/2026 10:38",
                 "cambio": "Estado cambiado a Reportado"
+            },
+            {
+                "fecha": "12/02/2026 11:58",
+                "cambio": "Estado cambiado a Activo"
             }
         ],
         "multas": [
@@ -86,6 +90,31 @@
                 "tipo_infraccion": "Semáforo en rojo",
                 "monto": "1500",
                 "lugar": "Calle 60 Centro"
+            }
+        ]
+    },
+    {
+        "placa": "ZCX416",
+        "marca": "lamborgini fiesta",
+        "modelo": "italika",
+        "anio": "1957",
+        "color": "negro",
+        "tipo": "compacto",
+        "propietario": "armandito rodrigo muñoz uitz",
+        "telefono": "99999999",
+        "estado": "Activo",
+        "historial": [
+            {
+                "fecha": "12/02/2026 12:18",
+                "cambio": "Multa registrada: estado de EBRIEDAD SEVERO por $6000"
+            }
+        ],
+        "multas": [
+            {
+                "fecha": "12/02/2026",
+                "tipo_infraccion": "estado de EBRIEDAD SEVERO",
+                "monto": "6000",
+                "lugar": "bergel "
             }
         ]
     }
