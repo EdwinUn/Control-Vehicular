@@ -402,7 +402,7 @@ class VentanaPrincipal(QMainWindow):
 
         self.tabla_multas = QTableWidget()
         self.tabla_multas.setColumnCount(4)
-        self.tabla_multas.setHorizontalHeaderLabels(["Fecha", "Lugar", "Corralón", "# Multas"])
+        self.tabla_multas.setHorizontalHeaderLabels(["Fecha", "Tipo", "Monto", "Lugar"])
         self.tabla_multas.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla_multas.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabla_multas.verticalHeader().setVisible(False)
@@ -666,13 +666,51 @@ class VentanaPrincipal(QMainWindow):
                 QMessageBox.warning(self, "Error", "Vehículo no encontrado")
                 return
 
-            # Llenamos los labels usando las claves del JSON
+            # 1. Llenar Labels (Datos Generales)
             for clave, label in self.labels_info.items():
                 valor = vehiculo.get(clave, "—")
-                # Recuperamos el prefijo (ej: "Año") para no perderlo al actualizar el texto
-                texto_base = label.text().split(":")[0] 
+                texto_base = label.text().split(":")[0]
                 label.setText(f"{texto_base}: {valor}")
+
+            # 2. Llenar Tabla de Multas
+            self.tabla_multas.setRowCount(0) # Limpiar tabla anterior
+            lista_multas = vehiculo.get("multas", [])
             
+            for m in lista_multas:
+                row = self.tabla_multas.rowCount()
+                self.tabla_multas.insertRow(row)
+                
+                # Aseguramos que existan las claves, si no, pone string vacío
+                fecha = m.get("fecha", "")
+                tipo = m.get("tipo_infraccion", "")
+                monto = f"${m.get('monto', '0')}"
+                lugar = m.get("lugar", "")
+
+                self.tabla_multas.setItem(row, 0, QTableWidgetItem(fecha))
+                self.tabla_multas.setItem(row, 1, QTableWidgetItem(tipo))
+                self.tabla_multas.setItem(row, 2, QTableWidgetItem(monto))
+                self.tabla_multas.setItem(row, 3, QTableWidgetItem(lugar))
+
+            # 3. Llenar Tabla de Historial
+            self.tabla_historial.setRowCount(0) # Limpiar tabla anterior
+            lista_historial = vehiculo.get("historial", [])
+            
+            # Invertimos la lista para ver lo más reciente arriba (opcional, pero recomendado)
+            for h in reversed(lista_historial):
+                row = self.tabla_historial.rowCount()
+                self.tabla_historial.insertRow(row)
+
+                # Tu backend ya normaliza esto, así que siempre debería ser diccionario
+                if isinstance(h, dict):
+                    fecha = h.get("fecha", "")
+                    cambio = h.get("cambio", "")
+                else:
+                    # Fallback por si acaso queda algún string viejo
+                    fecha = "—"
+                    cambio = str(h)
+
+                self.tabla_historial.setItem(row, 0, QTableWidgetItem(fecha))
+                self.tabla_historial.setItem(row, 1, QTableWidgetItem(cambio))
     def editar(self):
         placa = self.campos_edicion["placa"].text()
         nuevos = {k: v.text() for k, v in self.campos_edicion.items() if k != "placa"}

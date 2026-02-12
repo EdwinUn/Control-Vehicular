@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import Qt # Importación necesaria para el escalado
+from PySide6.QtCore import Qt 
 from interfaz import VentanaPrincipal
 
 # Optimización para pantallas de alta resolución
