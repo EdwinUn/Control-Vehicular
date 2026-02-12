@@ -386,7 +386,8 @@ class VentanaPrincipal(QMainWindow):
             ("color", "Color"),
             ("tipo", "Tipo"),
             ("propietario", "Propietario"),
-            ("telefono", "Teléfono")
+            ("telefono", "Teléfono"),
+            ("estado", "Estado Actual")
         ]
 
         for clave_json, texto_visual in campos:
@@ -432,7 +433,23 @@ class VentanaPrincipal(QMainWindow):
         self.tabla_historial.setMinimumHeight(160)  # 👈 Hace que respire
 
         self.layout_info.addWidget(self.tabla_historial)
+        
+        # ... código de la tabla historial ...
+        self.layout_info.addWidget(self.tabla_historial)
 
+        # === BOTÓN CAMBIAR ESTADO ===
+        self.btn_estado = QPushButton("Marcar como REPORTADO")
+        self.btn_estado.setMinimumHeight(45)
+        self.btn_estado.setStyleSheet("background-color: #8B0000; font-weight: bold;") # Rojo oscuro
+        self.btn_estado.clicked.connect(self.accion_cambiar_estado)
+        
+        # Ocultamos el botón al inicio (solo se muestra si buscas un auto)
+        self.btn_estado.setVisible(False) 
+
+        self.layout_info.addSpacing(10)
+        self.layout_info.addWidget(self.btn_estado)
+        
+        
         scroll.setWidget(self.contenido_busqueda)
         layout.addWidget(scroll)
 
@@ -711,6 +728,42 @@ class VentanaPrincipal(QMainWindow):
 
                 self.tabla_historial.setItem(row, 0, QTableWidgetItem(fecha))
                 self.tabla_historial.setItem(row, 1, QTableWidgetItem(cambio))
+                
+            # 4. Configurar botón de estado
+            estado_actual = vehiculo.get("estado", "Activo")
+            self.btn_estado.setVisible(True) # Mostrar el botón ahora que hay datos
+            
+            if estado_actual == "Activo":
+                self.btn_estado.setText("Marcar como REPORTADO")
+                self.btn_estado.setStyleSheet("background-color: #a81c1c; color: white; font-weight: bold; padding: 10px;")
+                self.btn_estado.setProperty("accion", "reportar") # Usamos propiedad dinámica
+            else:
+                self.btn_estado.setText("Reactivar Vehículo")
+                self.btn_estado.setStyleSheet("background-color: #2e7d32; color: white; font-weight: bold; padding: 10px;")
+                self.btn_estado.setProperty("accion", "activar")
+
+        # Nueva función para manejar el click
+    def accion_cambiar_estado(self):
+            placa = self.buscar_placa.text().strip().upper()
+            accion = self.btn_estado.property("accion")
+            
+            if not placa: return
+
+            if accion == "reportar":
+                confirmacion = QMessageBox.question(
+                    self, "Confirmar Reporte", 
+                    f"¿Seguro que deseas marcar el vehículo {placa} como ROBADO/REPORTADO?",
+                    QMessageBox.Yes | QMessageBox.No
+                )
+                if confirmacion == QMessageBox.Yes:
+                    vehiculos.cambiar_estado(placa, "Reportado")
+                    self.buscar() # Recargar datos para ver cambios
+                    QMessageBox.warning(self, "Alerta", "Vehículo marcado como REPORTADO.")
+
+            else: # activar
+                vehiculos.cambiar_estado(placa, "Activo")
+                self.buscar() # Recargar datos
+                QMessageBox.information(self, "Éxito", "Vehículo marcado como ACTIVO nuevamente.")   
     def editar(self):
         placa = self.campos_edicion["placa"].text()
         nuevos = {k: v.text() for k, v in self.campos_edicion.items() if k != "placa"}
