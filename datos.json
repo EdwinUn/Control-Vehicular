@@ -107,6 +107,14 @@
             {
                 "fecha": "12/02/2026 12:18",
                 "cambio": "Multa registrada: estado de EBRIEDAD SEVERO por $6000"
+            },
+            {
+                "fecha": "12/02/2026 12:46",
+                "cambio": "Estado cambiado a Reportado"
+            },
+            {
+                "fecha": "12/02/2026 12:47",
+                "cambio": "Estado cambiado a Activo"
             }
         ],
         "multas": [
