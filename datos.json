@@ -98,7 +98,7 @@
         "marca": "lamborgini fiesta",
         "modelo": "italika",
         "anio": "1957",
-        "color": "negro",
+        "color": "puto negro",
         "tipo": "compacto",
         "propietario": "armandito rodrigo muñoz uitz",
         "telefono": "99999999",
@@ -125,5 +125,18 @@
                 "lugar": "bergel "
             }
         ]
+    },
+    {
+        "placa": "JJG XXX FGD 756",
+        "marca": "UHU",
+        "modelo": "UBUNTU ",
+        "anio": "10",
+        "color": "GUATELMALTECO",
+        "tipo": "BURRO",
+        "propietario": "EL DUE;O",
+        "telefono": "POCO X6",
+        "estado": "Activo",
+        "historial": [],
+        "multas": []
     }
 ]
